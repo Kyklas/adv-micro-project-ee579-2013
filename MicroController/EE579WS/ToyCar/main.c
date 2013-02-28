@@ -1,21 +1,33 @@
 /*
  * ======== Standard MSP430 includes ========
  */
+#include <stdint.h>
 #include <msp430.h>
-
 /*
  * ======== Grace related includes ========
  */
 #include <ti/mcu/msp430/csl/CSL.h>
 
 /*
+ * ======== Lib modules includes ========
+ */
+
+#include "uart_io.h"
+/*
  *  ======== main ========
  */
-int main(int argc, char *argv[])
+void main()
 {
     CSL_init();                     // Activate Grace-generated configuration
     
-    // >>>>> Fill-in user code here <<<<<
-    
-    return (0);
+
+    init_uart();
+
+    puts("MSP430 Toy Car !\n\r");
+    puts("Loop \n\r");
+    while(1)
+    {
+    	putd(1989);
+    	__delay_cycles(1200000);
+    }
 }
