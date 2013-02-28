@@ -12,6 +12,8 @@
 #ifndef __UART_IO_CONFIG_H__
 #define __UART_IO_CONFIG_H__
 
+#include <stdint.h>
+
 //==================================================================================================
 // UART IO Config
 //
@@ -27,16 +29,16 @@
 * \{ **/
 
 ///\brief UART IO Operating Mode
-#define UIO_USE_INTERRUPTS	0	///< \hideinitializer
+#define UIO_USE_INTERRUPTS	1	///< \hideinitializer
 /**<	0 = Polling Mode	: No buffers used. RX and TX is done within the function calls. \n
 *		1 = Interrupt Mode	: All IO is buffered. RX and TX is handled in interrupts.
 **/
 	
 ///\brief RX buffer size (Interrupt mode only)
-#define UIO_RXBUF_SIZE	256	///< \hideinitializer
+#define UIO_RXBUF_SIZE	20	///< \hideinitializer
 
 ///\brief TX buffer size (Interrupt mode only)
-#define UIO_TXBUF_SIZE	256	///< \hideinitializer
+#define UIO_TXBUF_SIZE	40	///< \hideinitializer
 
 /// \brief Select which USCI module to use
 #define UIO_USE_DEV		0	///< \hideinitializer
@@ -70,9 +72,9 @@
 #define UIO_MCTL_115200	0x22	///< \hideinitializer
 
 // Default Baud Rate
-#define UIO_BR0_DEFAULT		UIO_BR0_9600
-#define UIO_BR1_DEFAULT		UIO_BR1_9600
-#define UIO_MCTL_DEFAULT	UIO_MCTL_9600
+#define UIO_BR0_DEFAULT		0xE2
+#define UIO_BR1_DEFAULT		0x04
+#define UIO_MCTL_DEFAULT	0x00
 	///\}
 ///\}
 	
