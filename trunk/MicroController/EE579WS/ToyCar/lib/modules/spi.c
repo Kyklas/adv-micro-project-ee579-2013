@@ -18,6 +18,8 @@ void SPI_DelayWtR()
 
 void SPI_Write(uint8_t addr,uint8_t value)
 {
+	uint16_t SR = __get_SR_register() & GIE;
+	__disable_interrupt();
 	// Always able to send
 	// while(!(UC0IFG&UCB0TXIFG)); 	// Wait to be able to send
 	// enable
@@ -27,9 +29,14 @@ void SPI_Write(uint8_t addr,uint8_t value)
 	while(!(UC0IFG&UCB0TXIFG));
 	UCB0TXBUF = value;				// Send data
 	while(!(UC0IFG&UCB0TXIFG));
+
+	__bis_SR_register(SR);
 }
 uint8_t SPI_Read(uint8_t addr)
 {
+	uint16_t SR = __get_SR_register() & GIE;
+	__disable_interrupt();
+
 	// Always able to send
 	// while(!(UC0IFG&UCB0TXIFG)); 	// Wait to be able to send
 	// enable
@@ -48,6 +55,6 @@ uint8_t SPI_Read(uint8_t addr)
 	// wait for the data.
 	while(!(UC0IFG&UCB0RXIFG));
 	//__delay_cycles(3);	// wait at least 250 ns @12MHz could be omitted because CPU is slow enough
-
+	__bis_SR_register(SR);
 	return UCB0RXBUF;
 }
