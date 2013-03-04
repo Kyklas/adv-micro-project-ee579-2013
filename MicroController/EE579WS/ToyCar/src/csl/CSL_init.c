@@ -6,6 +6,7 @@
 /* external peripheral initialization functions */
 extern void GPIO_init(void);
 extern void BCSplus_init(void);
+extern void USCI_B0_init(void);
 extern void System_init(void);
 extern void WDTplus_init(void);
 
@@ -25,6 +26,9 @@ void CSL_init(void)
 
     /* initialize Config for the MSP430 2xx family clock systems (BCS) */
     BCSplus_init();
+
+    /* initialize Config for the MSP430 USCI_B0 */
+    USCI_B0_init();
 
     /* initialize Config for the MSP430 System Registers */
     System_init();
