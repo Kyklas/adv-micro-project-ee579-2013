@@ -14,6 +14,30 @@
 void System_init(void)
 {
     /* 
+     * IFG1, Interrupt Flag Register 1
+     * 
+     * ~ACCVIFG -- No interrupt pending
+     * ~NMIIFG -- No interrupt pending
+     * ~OFIFG -- No interrupt pending
+     * WDTIFG -- Interrupt pending
+     * 
+     * Note: ~<BIT> indicates that <BIT> has value zero
+     */
+    IFG1 &= ~(WDTIFG);
+
+    /* 
+     * IE1, Interrupt Enable Register 1
+     * 
+     * ~ACCVIE -- Interrupt not enabled
+     * ~NMIIE -- Interrupt not enabled
+     * ~OFIE -- Interrupt not enabled
+     * WDTIE -- Interrupt enabled
+     * 
+     * Note: ~<BIT> indicates that <BIT> has value zero
+     */
+    IE1 |= WDTIE;
+
+    /* 
      * SR, Status Register
      * 
      * ~SCG1 -- Disable System clock generator 1

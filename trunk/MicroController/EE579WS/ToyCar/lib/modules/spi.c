@@ -23,9 +23,9 @@ void SPI_Write(uint8_t addr,uint8_t value)
 	// Always able to send
 	// while(!(UC0IFG&UCB0TXIFG)); 	// Wait to be able to send
 	// enable
-	P1SEL2 |= BIT7;
 	P1SEL |= BIT7;
-	UCB0TXBUF = addr;				// Send address
+	P1SEL2 |= BIT7;
+	UCB0TXBUF = addr|0x80;				// Send address
 	while(!(UC0IFG&UCB0TXIFG));
 	UCB0TXBUF = value;				// Send data
 	while(!(UC0IFG&UCB0TXIFG));
@@ -40,9 +40,11 @@ uint8_t SPI_Read(uint8_t addr)
 	// Always able to send
 	// while(!(UC0IFG&UCB0TXIFG)); 	// Wait to be able to send
 	// enable
-	P1SEL2 |= BIT7;
 	P1SEL |= BIT7;
-	UCB0TXBUF = addr;				// Send address
+	P1SEL2 |= BIT7;
+	UC0IFG &= ~UCB0RXIFG;
+	__delay_cycles(6);
+	UCB0TXBUF = addr&0x7F;				// Send address
 	// Wait until the receiver get the data
 	// since bidirectional bus, we also get the data
 	while(!(UC0IFG&UCB0RXIFG));
@@ -51,10 +53,10 @@ uint8_t SPI_Read(uint8_t addr)
 	P1SEL2 &= ~BIT7;
 	P1SEL &= ~BIT7;
 	__delay_cycles(60); // Wait at least 5 us @12MHz gives 48 cycles
-	UCB0TXBUF = 0xFF;	// Send anything to enable the clock and get the data
+	UCB0TXBUF = 0x5A;	// Send anything to enable the clock and get the data
 	// wait for the data.
 	while(!(UC0IFG&UCB0RXIFG));
-	//__delay_cycles(3);	// wait at least 250 ns @12MHz could be omitted because CPU is slow enough
+	__delay_cycles(6);	// wait at least 250 ns @12MHz could be omitted because CPU is slow enough
 	__bis_SR_register(SR);
 	return UCB0RXBUF;
 }

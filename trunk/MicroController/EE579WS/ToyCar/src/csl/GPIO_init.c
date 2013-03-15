@@ -23,7 +23,7 @@ void GPIO_init(void)
     P1SEL2 = BIT1 + BIT2 + BIT5 + BIT6 + BIT7;
 
     /* Port 1 Direction Register */
-    P1DIR = BIT2;
+    P1DIR = BIT2 + BIT3 + BIT4;
 
     /* Port 1 Interrupt Edge Select Register */
     P1IES = 0;
@@ -31,8 +31,17 @@ void GPIO_init(void)
     /* Port 1 Interrupt Flag Register */
     P1IFG = 0;
 
+    /* Port 2 Output Register */
+    P2OUT = 0;
+
     /* Port 2 Port Select Register */
-    P2SEL &= ~(BIT6 + BIT7);
+    P2SEL = BIT6;
+
+    /* Port 2 Port Select Register */
+    P2SEL &= ~(BIT7);
+
+    /* Port 2 Direction Register */
+    P2DIR = BIT1 + BIT2 + BIT4 + BIT5 + BIT6;
 
     /* Port 2 Interrupt Edge Select Register */
     P2IES = 0;

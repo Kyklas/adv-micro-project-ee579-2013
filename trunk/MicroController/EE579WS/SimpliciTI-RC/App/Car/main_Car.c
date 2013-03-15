@@ -77,6 +77,8 @@ void main (void)
    */
   SMPL_Init(sRxCallback);
 
+
+
   /* turn on LEDs. */
   if (!BSP_LED2_IS_ON())
   {

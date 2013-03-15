@@ -16,10 +16,10 @@ void WDTplus_init(void)
     /* 
      * WDTCTL, Watchdog Timer+ Register
      * 
-     * WDTHOLD -- Watchdog timer+ is stopped
+     * ~WDTHOLD -- Watchdog timer+ is not stopped
      * ~WDTNMIES -- NMI on rising edge
      * ~WDTNMI -- Reset function
-     * ~WDTTMSEL -- Watchdog mode
+     * WDTTMSEL -- Interval timer mode
      * ~WDTCNTCL -- No action
      * ~WDTSSEL -- SMCLK
      * ~WDTIS0 -- Watchdog clock source bit0 disabled
@@ -27,6 +27,6 @@ void WDTplus_init(void)
      * 
      * Note: ~<BIT> indicates that <BIT> has value zero
      */
-    WDTCTL = WDTPW + WDTHOLD;
+    WDTCTL = WDTPW + WDTTMSEL;
     
 }

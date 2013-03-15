@@ -54,8 +54,23 @@ void CSL_init(void)
  * --/COPYRIGHT--*/
 
 /* Interrupt Function Prototypes */
+extern void WDT_Int(void);
 
 
 
 
 
+
+/*
+ *  ======== Watchdog Timer Interval Interrupt Handler Generation ========
+ */
+#pragma vector=WDT_VECTOR
+__interrupt void WDT_ISR_HOOK(void)
+{
+
+
+	/* Watchdog Timer Interrupt Handler */
+	WDT_Int();
+
+	/* No change in operating mode on exit */
+}
