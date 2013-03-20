@@ -7,6 +7,7 @@
 extern void GPIO_init(void);
 extern void BCSplus_init(void);
 extern void USCI_B0_init(void);
+extern void Timer1_A3_init(void);
 extern void System_init(void);
 extern void WDTplus_init(void);
 
@@ -29,6 +30,9 @@ void CSL_init(void)
 
     /* initialize Config for the MSP430 USCI_B0 */
     USCI_B0_init();
+
+    /* initialize Config for the MSP430 A3 Timer0 */
+    Timer1_A3_init();
 
     /* initialize Config for the MSP430 System Registers */
     System_init();
@@ -54,7 +58,9 @@ void CSL_init(void)
  * --/COPYRIGHT--*/
 
 /* Interrupt Function Prototypes */
+
 extern void WDT_Int(void);
+
 
 
 
