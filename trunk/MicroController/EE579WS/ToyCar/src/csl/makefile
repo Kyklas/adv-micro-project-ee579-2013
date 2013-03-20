@@ -29,6 +29,10 @@ objs\USCI_B0_init.obj: USCI_B0_init.c
 	@echo cl430 $< ...
 	$(CC) $(CCOPTS) -I "C:/ti/grace_1_10_00_17/packages"  -I "C:/ti/grace_1_10_00_17/packages/ti/mcu/msp430//include" $<
 	
+objs\Timer1_A3_init.obj: Timer1_A3_init.c
+	@echo cl430 $< ...
+	$(CC) $(CCOPTS) -I "C:/ti/grace_1_10_00_17/packages"  -I "C:/ti/grace_1_10_00_17/packages/ti/mcu/msp430//include" $<
+	
 objs\System_init.obj: System_init.c
 	@echo cl430 $< ...
 	$(CC) $(CCOPTS) -I "C:/ti/grace_1_10_00_17/packages"  -I "C:/ti/grace_1_10_00_17/packages/ti/mcu/msp430//include" $<
@@ -37,7 +41,7 @@ objs\WDTplus_init.obj: WDTplus_init.c
 	@echo cl430 $< ...
 	$(CC) $(CCOPTS) -I "C:/ti/grace_1_10_00_17/packages"  -I "C:/ti/grace_1_10_00_17/packages/ti/mcu/msp430//include" $<
 	
-csl.lib: objs\CSL_init.obj objs\GPIO_init.obj objs\BCSplus_init.obj objs\USCI_B0_init.obj objs\System_init.obj objs\WDTplus_init.obj
+csl.lib: objs\CSL_init.obj objs\GPIO_init.obj objs\BCSplus_init.obj objs\USCI_B0_init.obj objs\Timer1_A3_init.obj objs\System_init.obj objs\WDTplus_init.obj
 	@ echo ar430 $@ $< ...
 	$(AR) $@ $^
 
@@ -47,6 +51,7 @@ clean:
 	-@$(RM) objs\GPIO_init.obj
 	-@$(RM) objs\BCSplus_init.obj
 	-@$(RM) objs\USCI_B0_init.obj
+	-@$(RM) objs\Timer1_A3_init.obj
 	-@$(RM) objs\System_init.obj
 	-@$(RM) objs\WDTplus_init.obj
 
