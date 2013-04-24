@@ -264,7 +264,7 @@ char* getline(char *line){
 	uint8_t k;
 	
 	// until we read a newline
-    while ((k = getc()) != '\n') {
+    while ((k = getc()) != '\n' && (k != '\r')) {
 		*ch++ = k;
 	}
 	

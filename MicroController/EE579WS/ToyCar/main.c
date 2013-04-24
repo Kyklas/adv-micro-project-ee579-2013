@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <msp430.h>
 #include <math.h>
+#include <stdlib.h>
 /*
  * ======== Grace related includes ========
  */
@@ -16,10 +17,19 @@
 #include "uart_io.h" // again, for the mouse
 #include "drive.h" // This is where the forward, back and speed functions are defined
 
-unsigned short time; 
+#define TOCM 2.54f/250.0f
+#define PI 3.1415f
+#define TODEG 360.0f/(2.0f*PI)
+
+unsigned long ltime=0;
+unsigned long dtime=0;
+unsigned long time=0;
 float x = 0;
 float y = 0;
 float angle = 0;
+signed int yspeed=0;
+int speedTarget=0;
+char buf[10];
 /*
  *  ======== main ========
  */
@@ -31,20 +41,24 @@ void main()
 	char bufferin;
 	int mx,my;
 	unsigned char s =50;        // speed variable, starts at 50, but will need to be roughly 200 to start moving from complete stop
-	CSL_init();                     // We have used 'Grace' to configure the timers for PWM and delays, this line includes those configs
-	init_uart();                        // could be done with Grace
+	CSL_init();                 // We have used 'Grace' to configure the timers for PWM and delays, this line includes those configs
+	init_uart();                // could be done with Grace
 	P2OUT|=BIT5;
 
 	puts("MSP430 Toy Car !\n\r"); // output this line to the serial console (PuTTY or similar)
-	    mx=SPI_Read(0x00);
-	    while(mx!=0x2A)
-	    {
-	              while(time<300);
-	              mx=SPI_Read(0x00);
-	              puts("\n\rMouse PID ");
-	              putx(mx,0);
-	    }
-
+	mx=SPI_Read(0x00);
+	while(mx!=0x2A)
+	{
+		dtime = time-ltime;
+		if( dtime > 300000)
+		{
+			ltime = time;
+			mx=SPI_Read(0x00);
+			puts("\n\rMouse PID ");
+			putx(mx,0);
+		}
+	}
+	// low resolution mode for the mouse sensor
 	SPI_Write(0x0d,0x24);
 	SPI_DelayWtR();
 	mx=SPI_Read(0x0d);
@@ -157,21 +171,61 @@ void main()
                                 break;
 				 */
 
+			case 'c' :
+				puts("\nEnter a speed value for the car");
+				stop();
+				getline( buf);
+				speedTarget = atoi(buf);
+				puts("\n\rNew speed :  ");
+				putsd((int16_t)(speedTarget));
+
+
 			}
 		}
-		mx=SPI_Read(0x02);
-		if(mx)
+
+		// do the calculations every 10ms
+		dtime = time-ltime;
+		if( dtime > 10000)
 		{
-			//puts("Read ");
-			mx=(int8_t)SPI_Read(0x03);
-			my=(int8_t)SPI_Read(0x04);
+			ltime = time;
+			if( SPI_Read(0x02))
+			{
+				mx = 0;
+				my = 0;
+				do
+				{
+					//puts("Read ");
+					mx+=(int8_t)SPI_Read(0x03);
+					my+=(int8_t)SPI_Read(0x04);
 
-			computePosition(mx,my);
 
-			putsd((int16_t)(x*100));puts("\n\ry ");
-			putsd((int16_t)(y*100));puts("\n\ra ");
-			putsd((int16_t)(angle*100));puts("\n\r\n\rx ");
+				}while(SPI_Read(0x02));
+
+				computePosition(mx,my);
+				// get the speed ==> movement in DPI is converted in mm ==> * TOCM * 10
+				// we want mm/ms, dtime is µs => dtime/1000
+				// a further *100 comes in to have a non decimal value
+				// the final result is in 100mm/ms
+				yspeed = (100*my/(int)(dtime/1000))*(10*TOCM);
+
+				putsd((int16_t)(yspeed));
+				puts("\n\rmx ");
+				putsd((int16_t)(mx));
+				puts("\n\rmy ");
+				putsd((int16_t)(my));
+				puts("\n\r\n\rx ");
+				putsd((int16_t)(x*100));
+				puts("\n\ry ");
+				putsd((int16_t)(y*100));
+				puts("\n\ra ");
+				putsd((int16_t)(angle*TODEG*100));
+				puts("\n\r\n\rspeed ");
+			}
 		}
+
+
+
+
 
 
 
@@ -193,18 +247,18 @@ void main()
 
 
 void computePosition(int8_t mx, int8_t my){
-	float alpha;
-	float dx = 0;
-	float dy = 0;
+	static float alpha;
+	static float dx = 0;
+	static float dy = 0;
 
-	alpha = atanf((float) mx / (6*250/2.54));//modification of the angle  of the car within the global co ordinate system
-	angle = angle - alpha;//update total angle in radians!!!!
-	dx = mx * sinf(angle);//the modification of x in the global co ordinate system
-	dy = my * cosf(angle);// the modification of the y in the gloabl co ordinate system
+	alpha = atan2f( ((float) mx), ((float)(6*250/2.54f)) );//modification of the angle of the car within the global coordinate system
+	angle -= alpha;//update total angle in radians!!!!
+	dx = (float)(mx * sinf(angle));//the modification of x in the global co ordinate system
+	dy = (float)(my * cosf(angle));// the modification of the y in the gloabl co ordinate system
 
 	// convert from dpi to cm
-	x = x + (dx/250)*2.54 ;
-	y= y + (dy/250)*2.54;
+	x = x + (dx*TOCM);
+	y = y + (dy*TOCM);
 
 
 	//drive(x, y,angle);
@@ -274,7 +328,52 @@ void computePosition(int8_t mx, int8_t my){
 /* Setup the watchdog timers to use for delays */
 void WDT_Int()
 {
-	time++;
-	if(time>333)
-		time=0;
+	time+=682;
+//	if(time>333)
+//		time=0;
 }
+
+
+#define Ki 2
+// PI correction for the speed given the Target speed, the Current speed and the time interval
+void speedControl( int speedTarget, int speedCur, int dt)
+{
+	int speedError = 0;
+	static int speedIntegral = 0;
+
+	speedError = Ki * (speedTarget - speedCur);
+
+	speedIntegral += speedError * dt;
+
+	if( speedInteral > 0)
+	{
+		if( speedIntegral > 255)
+		{
+			speedIntegral = 255;
+		}
+		forward();
+		speed( speedIntegral);
+	}
+	else
+	{
+		if( speedIntegral < -255 )
+		{
+			speedIntegral = -255;
+		}
+		backward();
+		speed( -speedIntegral);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+}
+
