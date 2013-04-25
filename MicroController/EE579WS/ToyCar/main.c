@@ -39,6 +39,7 @@ void speedControl( int speedTarget, int speedCur, int dt);
 
 void main()
 {
+	int i  = 0;
 	char bufferin;
 	int mx,my;
 	unsigned char s =50;        // speed variable, starts at 50, but will need to be roughly 200 to start moving from complete stop
@@ -141,6 +142,7 @@ void main()
 			case ' ' :
 				puts("Stop \n\r");
 				stop();
+				speedTarget = 0;
 				break;
 
 				// Forward
@@ -179,6 +181,14 @@ void main()
 				speedTarget = atoi(buf);
 				puts("\n\rNew speed :  ");
 				putsd((int16_t)(speedTarget));
+				break;
+
+			case 'r' :
+				x=0;
+				y=0;
+				angle = 0;
+
+				break;
 
 
 			}
@@ -189,6 +199,7 @@ void main()
 		if( dtime > 10000)
 		{
 			ltime = time;
+			yspeed = 0; // reinit speed as will be calculated except if actually not moving
 			if( SPI_Read(0x02))
 			{
 				mx = 0;
@@ -196,34 +207,38 @@ void main()
 				do
 				{
 					//puts("Read ");
-					mx+=(int8_t)SPI_Read(0x03);
-					my+=(int8_t)SPI_Read(0x04);
+					mx-=(int8_t)SPI_Read(0x03);
+					my-=(int8_t)SPI_Read(0x04);
 
 
 				}while(SPI_Read(0x02));
 
 				computePosition(mx,my);
+				i++;
+				if( i%5 == 0)
+				{
+					i=0;
+					puts("\n\r\n\rx ");
+					putsd((int16_t)(x*100));
+					puts("\n\ry ");
+					putsd((int16_t)(y*100));
+					puts("\n\ra ");
+					putsd((int16_t)(angle*TODEG*100));
+				}
+
+
+
+
+
 				// get the speed ==> movement in DPI is converted in mm ==> * TOCM * 10
 				// we want mm/ms, dtime is µs => dtime/1000
 				// a further *100 comes in to have a non decimal value
 				// the final result is in 100mm/ms
-				yspeed = (100*my/(int)(dtime/1000))*(10*TOCM);
+				yspeed = (1000*TOCM*my/(int)(dtime/1000));
 
-				speedControl(speedTarget,yspeed,dtime);
-
-				putsd((int16_t)(yspeed));
-				puts("\n\rmx ");
-				putsd((int16_t)(mx));
-				puts("\n\rmy ");
-				putsd((int16_t)(my));
-				puts("\n\r\n\rx ");
-				putsd((int16_t)(x*100));
-				puts("\n\ry ");
-				putsd((int16_t)(y*100));
-				puts("\n\ra ");
-				putsd((int16_t)(angle*TODEG*100));
-				puts("\n\r\n\rspeed ");
 			}
+
+			speedControl(speedTarget,yspeed,dtime);
 		}
 
 
@@ -257,7 +272,7 @@ void computePosition(int8_t mx, int8_t my){
 	alpha = atan2f( ((float) mx), ((float)(6*250/2.54f)) );//modification of the angle of the car within the global coordinate system
 	angle -= alpha;//update total angle in radians!!!!
 	dx = (float)(mx * sinf(angle));//the modification of x in the global co ordinate system
-	dy = (float)(my * cosf(angle));// the modification of the y in the gloabl co ordinate system
+	dy = (float)(my * cosf(angle));// the modification of the y in the global co ordinate system
 
 	// convert from dpi to cm
 	x = x + (dx*TOCM);
@@ -337,7 +352,8 @@ void WDT_Int()
 }
 
 
-#define Ki 2
+#define Ki 1
+#define constPWM 512
 // PI correction for the speed given the Target speed, the Current speed and the time interval
 void speedControl( int speedTarget, int speedCur, int dt)
 {
@@ -347,28 +363,36 @@ void speedControl( int speedTarget, int speedCur, int dt)
 	// no speed
 	if(speedTarget == 0)
 	{
+		speedIntegral = 0;
 		stop();
 		return;
 	}
 
-	speedError = Ki * (speedTarget - speedCur);
+	speedError = Ki * (speedCur - speedTarget );
+	//speedError *= (dt/1000);
+	speedIntegral -= speedError;
 
-	speedIntegral += speedError * (dt/1000);
+	/*puts("speed : ");
+	putsd((int16_t)(speedCur));
+	puts("\n\r");
+	puts("Integral Speed : ");
+	putsd((int16_t)(speedIntegral));
+	puts("\n\r");*/
 
 	if( speedIntegral > 0)
 	{
-		if( speedIntegral > 255)
+		if( speedIntegral > constPWM)
 		{
-			speedIntegral = 255;
+			speedIntegral = constPWM;
 		}
 		forward();
 		speed( speedIntegral);
 	}
 	else
 	{
-		if( speedIntegral < -255 )
+		if( speedIntegral < -constPWM )
 		{
-			speedIntegral = -255;
+			speedIntegral = -constPWM;
 		}
 		backward();
 		speed( -speedIntegral);
