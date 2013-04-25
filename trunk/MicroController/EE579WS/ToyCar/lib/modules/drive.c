@@ -28,7 +28,7 @@ void backward()
 void speed(unsigned long s)
 {
 	s=s*TA1CCR0;
-	TA1CCR1 = (unsigned short) (s>>8);
+	TA1CCR1 = (unsigned short) (s>>9);
 }
 void stop()
 {
