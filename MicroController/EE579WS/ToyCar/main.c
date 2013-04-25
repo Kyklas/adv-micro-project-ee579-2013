@@ -35,6 +35,7 @@ char buf[10];
  */
 void computePosition(int8_t mx, int8_t my);
 //void drive(float x, float y, float angle);
+void speedControl( int speedTarget, int speedCur, int dt);
 
 void main()
 {
@@ -172,7 +173,7 @@ void main()
 				 */
 
 			case 'c' :
-				puts("\nEnter a speed value for the car");
+				puts("\nEnter a speed value for the car ");
 				stop();
 				getline( buf);
 				speedTarget = atoi(buf);
@@ -207,6 +208,8 @@ void main()
 				// a further *100 comes in to have a non decimal value
 				// the final result is in 100mm/ms
 				yspeed = (100*my/(int)(dtime/1000))*(10*TOCM);
+
+				speedControl(speedTarget,yspeed,dtime);
 
 				putsd((int16_t)(yspeed));
 				puts("\n\rmx ");
@@ -341,11 +344,18 @@ void speedControl( int speedTarget, int speedCur, int dt)
 	int speedError = 0;
 	static int speedIntegral = 0;
 
+	// no speed
+	if(speedTarget == 0)
+	{
+		stop();
+		return;
+	}
+
 	speedError = Ki * (speedTarget - speedCur);
 
-	speedIntegral += speedError * dt;
+	speedIntegral += speedError * (dt/1000);
 
-	if( speedInteral > 0)
+	if( speedIntegral > 0)
 	{
 		if( speedIntegral > 255)
 		{
@@ -363,17 +373,5 @@ void speedControl( int speedTarget, int speedCur, int dt)
 		backward();
 		speed( -speedIntegral);
 	}
-}
-
-
-
-
-
-
-
-
-
-
-
 }
 
