@@ -184,6 +184,17 @@ void main()
 				break;
 
 			case 'r' :
+				puts("Reset");
+				puts("\n\r");
+
+				/* to be removed */
+				putsd((int16_t)(x*100));
+				puts("\n\ry ");
+				putsd((int16_t)(y*100));
+				puts("\n\ra ");
+				putsd((int16_t)(angle*TODEG*100));
+				//
+
 				x=0;
 				y=0;
 				angle = 0;
@@ -215,15 +226,23 @@ void main()
 
 				computePosition(mx,my);
 				i++;
+				/* mx and my display*/
+				puts("\n\r");
+				putsd((int16_t)(mx));
+				puts(" ");
+				putsd((int16_t)(my));
 				if( i%5 == 0)
 				{
 					i=0;
-					puts("\n\r\n\rx ");
+
+
+					/* x and y position as well as angle display */
+					/*puts("\n\r\n\rx ");
 					putsd((int16_t)(x*100));
 					puts("\n\ry ");
 					putsd((int16_t)(y*100));
 					puts("\n\ra ");
-					putsd((int16_t)(angle*TODEG*100));
+					putsd((int16_t)(angle*TODEG*100));*/
 				}
 
 
@@ -269,9 +288,9 @@ void computePosition(int8_t mx, int8_t my){
 	static float dx = 0;
 	static float dy = 0;
 
-	alpha = atan2f( ((float) mx), ((float)(6*250/2.54f)) );//modification of the angle of the car within the global coordinate system
+	alpha = atan2f( ((float) mx), ((float)(6.5f*250/2.54f)) );//modification of the angle of the car within the global coordinate system
 	angle -= alpha;//update total angle in radians!!!!
-	dx = (float)(mx * sinf(angle));//the modification of x in the global co ordinate system
+	dx = (float)(my * sinf(angle));//the modification of x in the global co ordinate system
 	dy = (float)(my * cosf(angle));// the modification of the y in the global co ordinate system
 
 	// convert from dpi to cm
