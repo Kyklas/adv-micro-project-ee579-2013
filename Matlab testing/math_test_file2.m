@@ -13,8 +13,15 @@ angle = 0;
 %file = fopen( 'rear left 90.txt');
 %file = fopen( 'straight about 10cm.txt');
 %file = fopen( 'turn right about 90.txt');
-file = fopen( 'droit puis 90 gauche.txt'); % straight then 90 left
+%file = fopen( 'droit puis 90 gauche.txt'); % straight then 90 left
 %file = fopen( 'droit puis 90 droite.txt'); % straight then 90 right
+
+%file = fopen( 'etalon_coef_anglesup44.54.txt');
+%file = fopen('etalon103.68.txt');
+%file = fopen('etalon27.36.txt');
+%file = fopen('etalon119.69.txt');
+%file = fopen('etalon116.73.txt');
+file = fopen('etalon123.txt');
 
 % get the data
 data = fscanf(file, '%i', [2,inf]);
@@ -30,10 +37,10 @@ Dy = -data(2,:);
 % process the data
 
  for i=1:size(Dx,2);
-        alpha = atand( Dx(i) / (6*250/2.54) );  % 6 = dist in cm from sensor to turning center of car -> to be measured/ determined more precisely
+        alpha = atand( Dx(i) / (6.5*250/2.54) );  % 6 = dist in cm from sensor to turning center of car -> to be measured/ determined more precisely
         angle(end+1) = angle(end) - alpha;
-        delta_x = Dy(i) * sind(angle(end-1)) ;
-        delta_y = Dy(i) * cosd(angle(end-1));
+        delta_x = Dy(i) * sind(angle(end)) ;
+        delta_y = Dy(i) * cosd(angle(end));
         x(end + 1) = x(end) + delta_x;
         y(end + 1) = y(end) + delta_y;
  end
@@ -44,6 +51,10 @@ y= y/250;
 % convert from inch to cm
 x = 2.54 * x;
 y = 2.54 * y;
+
+x(end)
+y(end)
+angle(end)
 
 t = 1:size(x, 2);
 plot(t,x);
