@@ -5,6 +5,7 @@
 #include <msp430.h>
 #include <math.h>
 #include <stdlib.h>
+
 /*
  * ======== Grace related includes ========
  */
@@ -15,72 +16,98 @@
  */
 #include "spi.h" // this is for the mouse
 #include "uart_io.h" // again, for the mouse
-#include "drive.h" // This is where the forward, back and speed functions are defined
+#include "drive.h" // This is where the forward, backward, stop, turning and speed functions are defined
+#include "speedControl.h" // The speed control function
 
-#define TOCM 2.54f/250.0f
-#define PI 3.1415f
-#define TODEG 360.0f/(2.0f*PI)
+/*
+ * ======== Constants ========
+ */
+#define TOCM 2.54f/250.0f  // to convert a from low resolution DPI to cm
+#define PI 3.1415f // PI, used to convert from radian to degree
+#define TODEG 360.0f/(2.0f*PI) // used to convert an angle from radian to degree
+#define DEFAULTSPD 50 // the default speed of the car
 
-unsigned long ltime=0;
-unsigned long dtime=0;
-unsigned long time=0;
-float x = 0;
-float y = 0;
-float angle = 0;
-signed int yspeed=0;
-int speedTarget=0;
-char buf[10];
+/*
+ * ======== Global variables ========
+ */
+unsigned long time=0; // the current time
+unsigned long ltime=0; // time variable used to remember the last time the calculations were made
+unsigned long dtime=0; // time variable which hold the difference between the last time and the current time
+// these time variables are used at the beginning to wait for the car to be ready and during the execution to
+// avoid calculation the new car position too often
+float x = 0; // the x position (in cm) of the car within the global coordinates system
+float y = 0; // the y position (in cm) of the car within the global coordinates system
+float angle = 0; // the angle (in radians) of the car with respect to the y axis within the global coordinates system
+
+/*
+ * ======== Functions ========
+ */
+void computePosition(int8_t mx, int8_t my); // the math model function which update x, y and angle depending on the mouse measurements
+
 /*
  *  ======== main ========
  */
-void computePosition(int8_t mx, int8_t my);
-//void drive(float x, float y, float angle);
-void speedControl( int speedTarget, int speedCur, int dt);
 
 void main()
 {
-	int i  = 0;
-	char bufferin;
-	int mx,my;
-	unsigned char s =50;        // speed variable, starts at 50, but will need to be roughly 200 to start moving from complete stop
-	CSL_init();                 // We have used 'Grace' to configure the timers for PWM and delays, this line includes those configs
-	init_uart();                // could be done with Grace
-	P2OUT|=BIT5;
+	// Main variables
+	char buf[10]; // buffer used to read an input (string) from the user by serial
+	char bufferin; // buffer used to read an input (char) from the user by serial
+	int speedTarget = 0; // The wanted speed for the car
+	signed int yspeed=0; // The measured-calculated speed of the car
+	int mx, my; // The variable used to hold the mouse measurements (movement in x and y)
+	// at the beginning of the program, mx can also be used to make sure that the serial connection is established
 
-	puts("MSP430 Toy Car !\n\r"); // output this line to the serial console (PuTTY or similar)
-	mx=SPI_Read(0x00);
-	while(mx!=0x2A)
+	// Variables to be checked/deleted *******************************************************************************************
+	int i = 0; // general usage counter : currently used to display things once every 5 iteration of the maths model TO BE DELETED
+
+	// Initialisation
+	CSL_init();                 // We have used 'Grace' to configure the timers for PWM and delays, this line includes those configs
+	init_uart();                // UART initialisation (serial), could be done with Grace
+	P2OUT|=BIT5;				// light on one of the LED on top of the car
+
+	puts("MSP430 Toy Car !\n\r"); // output this line to the serial console (PuTTY or similar) (car ID)
+	mx=SPI_Read(0x00); // get the 'ready' status of the car
+	while(mx!=0x2A) // while the car is not ready, repeatedly try until it is ready
 	{
-		dtime = time-ltime;
-		if( dtime > 300000)
+		dtime = time - ltime; // calculate the time since the last iteration
+		if( dtime > 300000) // if we have waited long enough,try to reach the serial of the car again
 		{
-			ltime = time;
-			mx=SPI_Read(0x00);
+			ltime = time; // update the last time
+			mx=SPI_Read(0x00); // read again the 'ready' status of the car
 			puts("\n\rMouse PID ");
-			putx(mx,0);
+			putx(mx,0); // display the 'ready' status of the car
 		}
 	}
-	// low resolution mode for the mouse sensor
+
+	// Put the mouse sensor in low resolution
 	SPI_Write(0x0d,0x24);
 	SPI_DelayWtR();
 	mx=SPI_Read(0x0d);
 
+	// Main loop
 	while(1)
 	{
-//		forward();
-//		speed(100);
-		if(incount())
+		if(incount()) // If a character has been typed, analyse it
 		{
 			/*
                         This mainloop will take input from the user and control
                         the car based on the keys pressed. Currently, W is used
                         to go forward, S is used to go back, A and D turn left
                         and right, respectively - just like a computer game.
+                        T allows to test the serial connection, L and H allow switching the low and high
+                        resolution respectively
 
                         The space bar will stop all movement, however if you
                         press back when you are going forwards (or vice-versa)
-                        then you can
+                        then you can also stop the car. Turning works the same way
+
+                        C allows to choose the target speed of the car, the user should
+                        enter a number which would be the new speed used
+                        R allows to reset the currently memorized car position
 			 */
+
+			// get the character typed and display its code
 			bufferin = getc();
 			puts("Key ");
 			putd(bufferin);
@@ -89,142 +116,116 @@ void main()
 
 			switch(bufferin)
 			{
-			/***** These keys are used for outputing the mouse
-                        data, you won't need to use them ****/
-			case 't' :
-				SPI_Write(0x42,0x42);
-				SPI_DelayWtR();
-				mx=SPI_Read(0x42);
-				puts("Test ");
-				putx(mx,0);
-				puts("\n\r");
-				break;
-			case 'l' :
-				SPI_Write(0x0d,0x24);
-				SPI_DelayWtR();
-				mx=SPI_Read(0x0d);
-				puts("low resolution ");
-				putx(mx,0);
-				puts("\n\r");
-				break;
-			case 'h' :
-				SPI_Write(0x0d,0x01);
-				SPI_DelayWtR();
-				mx=SPI_Read(0x0d);
-				puts("high resolution ");
-				putx(mx,0);
-				puts("\n\r");
-				break;
-				/********************************/
+				/***** T-L-H keys are used for outputing the mouse data, you won't need to use them ****/
 
-				// Pressing U will increase the speed
-				// The speed value is between 0 and 255
-				// Once the speed reaches 255 or 0, it will loop around (ie. 255++ = 0)
-			case 'u' :
-				puts(" Speed Up \n\r");
-				s++;
-				putd(s);
-				putc(' ');
-				speed(s);
-				putd(TA1CCR1);
-				break;
-				// Decrease speed
-			case 'n' :
-				puts(" Speed down \n\r");
-				s--;
-				putd(s);
-				putc(' ');
-				speed(s);
-				putd(TA1CCR1);
-				break;
+				case 't' : // try to write on via serial and then check the written value
+					SPI_Write(0x42,0x42);
+					SPI_DelayWtR();
+					mx=SPI_Read(0x42);
+					puts("Test ");
+					putx(mx,0);
+					puts("\n\r");
+					break;
 
-				// Stop everything
-			case ' ' :
-				puts("Stop \n\r");
-				stop();
-				speedTarget = 0;
-				break;
+				case 'l' : // put the mouse sensor in low resolution mode
+					SPI_Write(0x0d,0x24);
+					SPI_DelayWtR();
+					mx=SPI_Read(0x0d);
+					puts("low resolution ");
+					putx(mx,0);
+					puts("\n\r");
+					break;
 
-				// Forward
-			case 'w':
-				puts("Forward \n\r");
+				case 'h' : // put the mouse sensor in high resolution mode
+					SPI_Write(0x0d,0x01);
+					SPI_DelayWtR();
+					mx=SPI_Read(0x0d);
+					puts("high resolution ");
+					putx(mx,0);
+					puts("\n\r");
+					break;
 
-				forward();
-				speed(s);
-				break;
+				case ' ' : 	// Stop the car, reset the speed target
+					puts("Stop \n\r");
+					stop();
+					speedTarget = 0;
+					break;
 
-				// Backwarsd
-			case 's':
-				puts("Backward \n\r");
+				case 'w': // move forward
+					puts("Forward \n\r");
+					forward();
+					speed(DEFAULTSPD);
+					break;
 
-				backward();
-				speed(s);
-				break;
+				case 's': // move backward
+					puts("Backward \n\r");
+					backward();
+					speed(DEFAULTSPD);
+					break;
 
-				// Left & Right
-			case 'a':
-				left();
-				break;
-			case 'd':
-				right();
-				break;
-				/*
-                        default:
-                                puts("Invalid command \n\r");
-                                break;
-				 */
+				case 'a': // turn left
+					left();
+					break;
 
-			case 'c' :
-				puts("\nEnter a speed value for the car ");
-				stop();
-				getline( buf);
-				speedTarget = atoi(buf);
-				puts("\n\rNew speed :  ");
-				putsd((int16_t)(speedTarget));
-				break;
+				case 'd': // turn right
+					right();
+					break;
 
-			case 'r' :
-				puts("Reset");
-				puts("\n\r");
+				case 'c' : // Modify the target speed, stop the car
+					puts("\nEnter a speed value for the car.");
+					stop(); // stop the car
+					getline(buf); // get the target speed entry
+					speedTarget = atoi(buf); // convert it from string to a number
+					puts("\n\rNew speed :  "); // display the new target speed
+					putsd((int16_t)(speedTarget));
+					break;
 
-				/* to be removed */
-				putsd((int16_t)(x*100));
-				puts("\n\ry ");
-				putsd((int16_t)(y*100));
-				puts("\n\ra ");
-				putsd((int16_t)(angle*TODEG*100));
-				//
+				case 'r' : // reset the X, Y and angle values
+					puts("Reset");
+					puts("\n\r");
 
-				x=0;
-				y=0;
-				angle = 0;
+					/* TO BE REMOVED ****************************************************************************************/
+					// display the calculated x, y and angle before reseting them
+					putsd((int16_t)(x*100));
+					puts("\n\ry ");
+					putsd((int16_t)(y*100));
+					puts("\n\ra ");
+					putsd((int16_t)(angle*TODEG*100));
+					// end of TO BE REMOVED
 
-				break;
+					// reset the memorized-calculated x, y and angle of the car
+					x=0;
+					y=0;
+					angle = 0;
+					break;
 
-
+				default: // default case : warning message and do nothing
+					puts("Invalid command \n\r");
+					break;
 			}
 		}
 
-		// do the calculations every 10ms
-		dtime = time-ltime;
-		if( dtime > 10000)
+		// Other tasks of the main : calculate the position of the car and the speed
+
+		// 1) calculate the car position every 10ms
+		dtime = time - ltime; // calculate how much time has passed since the last iteration
+		if( dtime > 10000) // if the time is at least 10ms
 		{
-			ltime = time;
-			yspeed = 0; // reinit speed as will be calculated except if actually not moving
-			if( SPI_Read(0x02))
+			ltime = time; // update the new last time
+			yspeed = 0; // reset the calculated speed as it will be recalculated except if the car is actually not moving (allow to detect that the car is not moving anymore after it has moved once)
+			if( SPI_Read(0x02)) // if there are measurements waiting to be read
 			{
-				mx = 0;
+				mx = 0; // reset the variable holding the mouse measurements
 				my = 0;
-				do
+				do // get the movements during the 10ms
 				{
-					//puts("Read ");
-					mx-=(int8_t)SPI_Read(0x03);
+					mx-=(int8_t)SPI_Read(0x03); // by adding the measurements for x and y
 					my-=(int8_t)SPI_Read(0x04);
-
-
-				}while(SPI_Read(0x02));
-
+				}while(SPI_Read(0x02)); // as long as there are measurements to be read
+				// update the car actual position using the maths model
 				computePosition(mx,my);
+
+				// TO BE REMOVED
 				i++;
 				/* mx and my display*/
 				puts("\n\r");
@@ -234,8 +235,6 @@ void main()
 				if( i%5 == 0)
 				{
 					i=0;
-
-
 					/* x and y position as well as angle display */
 					/*puts("\n\r\n\rx ");
 					putsd((int16_t)(x*100));
@@ -244,177 +243,55 @@ void main()
 					puts("\n\ra ");
 					putsd((int16_t)(angle*TODEG*100));*/
 				}
+				// END OF TO BE REMOVED
 
-
-
-
-
+				// there have been new measurements so a new speed of the car can be calculated
 				// get the speed ==> movement in DPI is converted in mm ==> * TOCM * 10
 				// we want mm/ms, dtime is µs => dtime/1000
-				// a further *100 comes in to have a non decimal value
+				// a further *100 comes in to have a non decimal value (float avoidance)
 				// the final result is in 100mm/ms
 				yspeed = (1000*TOCM*my/(int)(dtime/1000));
-
 			}
-
-			speedControl(speedTarget,yspeed,dtime);
+			speedControl(speedTarget, yspeed, dtime); // control the speed of the car
 		}
 
-
-
-
-
-
-
 		/* This is to flash the two LEDs on top of the car :P */
-		if(P2OUT&BIT5 && time>150)
+		if(P2OUT&BIT5 && (time%333)>150)
 		{
 			P2OUT&=~BIT5;
 			P2OUT|=BIT4;
-			continue;
+			continue;//************************************************what is that for ????
 		}
-		if(P2OUT&BIT4 && time<150)
+		if(P2OUT&BIT4 && (time%333)<150)
 		{
 			P2OUT&=~BIT4;
 			P2OUT|=BIT5;
-			continue;
+			continue;//************************************************what is that for ????
 		}
 	}
 }
 
+/* The maths model function which update the car position (x, y, angle) in the
+ * global coordinate system bases on the measurements of the mouse (mx and my)
+ */
+void computePosition(int8_t mx, int8_t my)
+{
+	// variables
+	float alpha; // the angle variation
+	float dx = 0; // the x position variation
+	float dy = 0; // the y position variation
 
-void computePosition(int8_t mx, int8_t my){
-	static float alpha;
-	static float dx = 0;
-	static float dy = 0;
-
-	alpha = atan2f( ((float) mx), ((float)(6.5f*250/2.54f)) );//modification of the angle of the car within the global coordinate system
-	angle -= alpha;//update total angle in radians!!!!
-	dx = (float)(my * sinf(angle));//the modification of x in the global co ordinate system
-	dy = (float)(my * cosf(angle));// the modification of the y in the global co ordinate system
-
-	// convert from dpi to cm
+	alpha = atan2f( ((float) mx), ((float)(6.5f*250/2.54f)) );// get the modification of the angle of the car within the global coordinate system
+	angle -= alpha; // update total angle in radians
+	dx = (float)(my * sinf(angle));// get the modification of x in the global coordinates system
+	dy = (float)(my * cosf(angle));// get the modification of the y in the global coordinates system
+	// update x and y using the x and y variation previously calculated
 	x = x + (dx*TOCM);
 	y = y + (dy*TOCM);
-
-
-	//drive(x, y,angle);
 }
-
-/**
- * @param x is current x in cm
- * @paramm y is current y in cm
- * @param angle is current angle in radians
- */
-//void drive(float x, float y, float angle){
-//	if(beforeTurn){
-//		if(y < distance_till_turn){
-//			forward();
-//			speed(100);
-//		}
-//		else {
-//			stop();
-//			beforeTurn = 0;
-//			duringTurn = 1;
-//		}
-//
-//		if(angle < -3){
-//			right();
-//		}
-//		else if(angle >3){
-//			left();
-//		}
-//
-//		distance_travelled = y;
-//	}
-	//		else if(duringTurn){
-	//			if(angle - angle_given > 0)
-	//			{
-	//				forward();
-	//				speed(s/2);
-	//				left();
-	//			}
-	//			else if( angle - angle_given < 0)
-	//			{
-	//				forward();
-	//				speed(s/2);
-	//				right();
-	//		}
-	//		else if (afterTurn){
-	//			distance_travelled = distance_travelled + sqrt( pow(x,2) + pow(y,2) );
-	//
-	//			if( distance_travelled < 6){
-	//				forward();
-	//				speed(s);
-	//			}
-	//			else {
-	//				stop();
-	//				beforeTurn = 0;
-	//			}
-	//
-	//			if(angle < angle_given - 3){
-	//				right();
-	//			}
-	//			else if(angle > angle_given + 3 ){
-	//				left();
-	//			}
-	//		}
-
-//}
 
 /* Setup the watchdog timers to use for delays */
 void WDT_Int()
 {
 	time+=682;
-//	if(time>333)
-//		time=0;
 }
-
-
-#define Ki 1
-#define constPWM 512
-// PI correction for the speed given the Target speed, the Current speed and the time interval
-void speedControl( int speedTarget, int speedCur, int dt)
-{
-	int speedError = 0;
-	static int speedIntegral = 0;
-
-	// no speed
-	if(speedTarget == 0)
-	{
-		speedIntegral = 0;
-		stop();
-		return;
-	}
-
-	speedError = Ki * (speedCur - speedTarget );
-	//speedError *= (dt/1000);
-	speedIntegral -= speedError;
-
-	/*puts("speed : ");
-	putsd((int16_t)(speedCur));
-	puts("\n\r");
-	puts("Integral Speed : ");
-	putsd((int16_t)(speedIntegral));
-	puts("\n\r");*/
-
-	if( speedIntegral > 0)
-	{
-		if( speedIntegral > constPWM)
-		{
-			speedIntegral = constPWM;
-		}
-		forward();
-		speed( speedIntegral);
-	}
-	else
-	{
-		if( speedIntegral < -constPWM )
-		{
-			speedIntegral = -constPWM;
-		}
-		backward();
-		speed( -speedIntegral);
-	}
-}
-
