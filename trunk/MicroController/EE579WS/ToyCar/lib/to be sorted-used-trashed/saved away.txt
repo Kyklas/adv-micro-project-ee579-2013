@@ -1,0 +1,105 @@
+//void drive(float x, float y, float angle);
+
+
+
+
+
+/**
+ * @param x is current x in cm
+ * @paramm y is current y in cm
+ * @param angle is current angle in radians
+ */
+//void drive(float x, float y, float angle){
+//	if(beforeTurn){
+//		if(y < distance_till_turn){
+//			forward();
+//			speed(100);
+//		}
+//		else {
+//			stop();
+//			beforeTurn = 0;
+//			duringTurn = 1;
+//		}
+//
+//		if(angle < -3){
+//			right();
+//		}
+//		else if(angle >3){
+//			left();
+//		}
+//
+//		distance_travelled = y;
+//	}
+	//		else if(duringTurn){
+	//			if(angle - angle_given > 0)
+	//			{
+	//				forward();
+	//				speed(s/2);
+	//				left();
+	//			}
+	//			else if( angle - angle_given < 0)
+	//			{
+	//				forward();
+	//				speed(s/2);
+	//				right();
+	//		}
+	//		else if (afterTurn){
+	//			distance_travelled = distance_travelled + sqrt( pow(x,2) + pow(y,2) );
+	//
+	//			if( distance_travelled < 6){
+	//				forward();
+	//				speed(s);
+	//			}
+	//			else {
+	//				stop();
+	//				beforeTurn = 0;
+	//			}
+	//
+	//			if(angle < angle_given - 3){
+	//				right();
+	//			}
+	//			else if(angle > angle_given + 3 ){
+	//				left();
+	//			}
+	//		}
+
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from main
+
+
+					// Pressing U will increase the speed
+					// The speed value is between 0 and 255
+					// Once the speed reaches 255 or 0, it will loop around (ie. 255++ = 0)
+				case 'u' : // increase the speed 
+					puts(" Speed Up \n\r");
+					s++;
+					putd(s);
+					putc(' ');
+					speed(s);
+					putd(TA1CCR1);
+					break;
+					// Decrease speed
+				case 'n' :
+					puts(" Speed down \n\r");
+					s--;
+					putd(s);
+					putc(' ');
+					speed(s);
+					putd(TA1CCR1);
+					break;

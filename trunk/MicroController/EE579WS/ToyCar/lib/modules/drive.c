@@ -1,6 +1,7 @@
 #include "drive.h"
 #include "msp430.h"
 
+// function which controls the pwm in order to go forward
 void forward()
 {
 
@@ -13,6 +14,8 @@ void forward()
 
 	TA1CCR1 = 0;
 }
+
+// function which controls the pwm in order to go backward
 void backward()
 {
 
@@ -25,11 +28,15 @@ void backward()
 
 	TA1CCR1 = 0;
 }
+
+// function which set the power of the PWM (thus the speed 's' of the car)
 void speed(unsigned long s)
 {
 	s=s*TA1CCR0;
 	TA1CCR1 = (unsigned short) (s>>9);
 }
+
+// function which stops the car
 void stop()
 {
 	//P2SEL2&=~(BIT2|BIT1);
@@ -37,6 +44,7 @@ void stop()
 	TA1CCR1 = 0;
 }
 
+// function used to turn on the right
 void right()
 {
 	if(!(P1OUT&BIT4))
@@ -44,6 +52,8 @@ void right()
 	else
 		P1OUT&=~BIT4;
 }
+
+// function used to turn on the left
 void left()
 {
 	if(!(P1OUT&BIT3))
