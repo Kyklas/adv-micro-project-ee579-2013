@@ -11,8 +11,8 @@
 // PI correction for the speed given a target speed, a current speed and a time interval
 void speedControl( int speedTarget, int speedCur, int dt)
 {
-	int speedError = 0;
-	int speedIntegral = 0;
+	static int speedError = 0;
+	static int speedIntegral = 0;
 
 	// if the speed target is 0, stop the car and reset the integral variable
 	if(speedTarget == 0)

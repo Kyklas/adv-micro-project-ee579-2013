@@ -256,13 +256,13 @@ void main()
 		}
 
 		/* This is to flash the two LEDs on top of the car :P */
-		if(P2OUT&BIT5 && (time%333)>150)
+		if((P2OUT&BIT5) && ((time%600000)>300000))
 		{
 			P2OUT&=~BIT5;
 			P2OUT|=BIT4;
 			continue;//************************************************what is that for ????
 		}
-		if(P2OUT&BIT4 && (time%333)<150)
+		if((P2OUT&BIT4) && ((time%600000)<300000))
 		{
 			P2OUT&=~BIT4;
 			P2OUT|=BIT5;
