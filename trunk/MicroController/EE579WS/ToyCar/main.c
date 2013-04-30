@@ -18,6 +18,7 @@
 #include "uart_io.h" // again, for the mouse
 #include "drive.h" // This is where the forward, backward, stop, turning and speed functions are defined
 #include "speedControl.h" // The speed control function
+#include "angleCorrection.h" // Angle correction to compensate for any drift
 
 /*
  * ======== Constants ========
@@ -253,6 +254,7 @@ void main()
 				yspeed = (1000*TOCM*my/(int)(dtime/1000));
 			}
 			speedControl(speedTarget, yspeed, dtime); // control the speed of the car
+			angleCorrection(angle); //angle is in radians, it gets converted by the function
 		}
 
 		/* This is to flash the two LEDs on top of the car :P */
