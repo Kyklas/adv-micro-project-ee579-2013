@@ -12,16 +12,16 @@ int l = 0;
 int straight = 1;
 //if threshold is only 5 degrees then distance error is small
 // and may not need to be compensated for.
-void angleCorrection(float currentAngle)
+void angleCorrection(float currentAngle, float targetAngle)
 {
 	currentAngle *= TODEG;
 
-	if(currentAngle > THRESHOLD ){
+	if(currentAngle > targetAngle + THRESHOLD ){
 		left();
 		l = 1;
 		straight = 0;
 	}
-	else if(currentAngle < -THRESHOLD){
+	else if(currentAngle < targetAngle - THRESHOLD){
 		right();
 		l = 0;
 		straight = 0;

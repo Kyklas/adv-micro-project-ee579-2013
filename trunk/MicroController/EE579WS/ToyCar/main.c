@@ -18,7 +18,8 @@
 #include "uart_io.h" // again, for the mouse
 #include "drive.h" // This is where the forward, backward, stop, turning and speed functions are defined
 #include "speedControl.h" // The speed control function
-#include "angleCorrection.h" // Angle correction to compensate for any drift
+#include "angleCorrection.h" // The angle control function
+
 
 /*
  * ======== Constants ========
@@ -187,11 +188,11 @@ void main()
 
 					/* TO BE REMOVED ****************************************************************************************/
 					// display the calculated x, y and angle before reseting them
-					putsd((int16_t)(x*100));
+					/*putsd((int16_t)(x*100));
 					puts("\n\ry ");
 					putsd((int16_t)(y*100));
 					puts("\n\ra ");
-					putsd((int16_t)(angle*TODEG*100));
+					putsd((int16_t)(angle*TODEG*100));*/
 					// end of TO BE REMOVED
 
 					// reset the memorized-calculated x, y and angle of the car
@@ -229,10 +230,10 @@ void main()
 				// TO BE REMOVED
 				i++;
 				/* mx and my display*/
-				puts("\n\r");
+				/*puts("\n\r");
 				putsd((int16_t)(mx));
 				puts(" ");
-				putsd((int16_t)(my));
+				putsd((int16_t)(my));*/
 				if( i%5 == 0)
 				{
 					i=0;
@@ -241,8 +242,8 @@ void main()
 					putsd((int16_t)(x*100));
 					puts("\n\ry ");
 					putsd((int16_t)(y*100));
-					puts("\n\ra ");
-					putsd((int16_t)(angle*TODEG*100));*/
+					*/puts("\n\ra ");
+					putsd((int16_t)(angle*TODEG*100));
 				}
 				// END OF TO BE REMOVED
 
@@ -254,7 +255,8 @@ void main()
 				yspeed = (1000*TOCM*my/(int)(dtime/1000));
 			}
 			speedControl(speedTarget, yspeed, dtime); // control the speed of the car
-			angleCorrection(angle); //angle is in radians, it gets converted by the function
+			angleCorrection( angle, 0 );
+
 		}
 
 		/* This is to flash the two LEDs on top of the car :P */
