@@ -26,7 +26,7 @@ void speedControl( int speedTarget, int speedCur, int dt)
 	speedError = Ki * (speedCur - speedTarget ); // calculate the speed error
 	//speedError *= (dt/1000); // apply the time interval effet (for now removed as buggy)
 	speedIntegral -= speedError; // get the new integral control value
-
+	speedIntegral = 300;
 	// TO BE REMOVED ***************************************************************************
 	/*puts("speed : ");
 	putsd((int16_t)(speedCur));
