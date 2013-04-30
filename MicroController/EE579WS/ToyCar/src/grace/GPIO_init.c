@@ -15,7 +15,7 @@
  *  ==== ALL OTHER CHANGES WILL BE OVERWRITTEN WHEN IT IS REGENERATED ====
  *
  *  This file was generated from
- *      C:/Program Files/Texas Instruments/CCS/grace_2_00_01_65/packages/ti/mcu/msp430/csl/gpio/GPIO_init.xdt
+ *      C:/ti/grace_2_00_01_65/packages/ti/mcu/msp430/csl/gpio/GPIO_init.xdt
  */
 
 #include <msp430.h>
