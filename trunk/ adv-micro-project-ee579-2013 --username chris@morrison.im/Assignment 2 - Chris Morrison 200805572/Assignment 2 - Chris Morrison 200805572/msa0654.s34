@@ -1,0 +1,24 @@
+/**************************************************
+ *
+ * When using INTB to set up the variable vector
+ * table the addresses that correspond to the UART1
+ * transmit/receive interrupts must be set to 0xFCB6B.
+ *
+ * Just include this file into the project to fix this.
+ *
+ * Copyright 2000 IAR Systems. All rights reserved.
+ *
+ * $Revision: 1.2 $
+ *
+ * $Log: msa0654.s34 $
+ * Revision 1.2  2000/05/17 13:17:07  IPEH
+ * Revision 1.1  2000/05/17 13:09:55  IPEH
+ * Initial revision
+ *
+ **************************************************/
+
+  .common   INTVEC
+	.org      0x4C
+	.lword		0FCB6BH					; No19 UART1 Transmission Interrupt
+	.lword		0FCB6BH					; No20 UART1 Receive Interrupt
+  .end
