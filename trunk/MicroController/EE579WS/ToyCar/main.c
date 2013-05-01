@@ -56,6 +56,8 @@ void main()
 	char buf[10]; // buffer used to read an input (string) from the user by serial
 	char bufferin; // buffer used to read an input (char) from the user by serial
 	int speedTarget = 0; // The wanted speed for the car
+	int distanceTarget = 0; // The distance before the turn (in cm)
+	int angleTarget = 0; // the angle to turn (in degrees)
 	signed int yspeed=0; // The measured-calculated speed of the car
 	int mx, my; // The variable used to hold the mouse measurements (movement in x and y)
 	// at the beginning of the program, mx can also be used to make sure that the serial connection is established
@@ -107,6 +109,7 @@ void main()
                         C allows to choose the target speed of the car, the user should
                         enter a number which would be the new speed used
                         R allows to reset the currently memorized car position
+                        P allows to write the distance and the angle targetted for the main program
 			 */
 
 			// get the character typed and display its code
@@ -201,6 +204,20 @@ void main()
 					angle = 0;
 					break;
 
+				case 'p' : // get distance and angle, launch the correction
+					puts("\nEnter the distance before turning (cm) ");
+					stop(); // stop the car
+					getline(buf); // get the target distance entry
+					distanceTarget = atoi(buf); // convert it from string to a number
+					puts("\n\rDistance :  "); // display the new target distance
+					putsd((int16_t)(distanceTarget));
+					puts("\nEnter the angle to turn (degrees) ");
+					getline(buf); // get the target angle entry
+					angleTarget = atoi(buf); // convert it from string to a number
+					puts("\n\rAngle :  "); // display the new target angle
+					putsd((int16_t)(angleTarget));
+					break;
+
 				default: // default case : warning message and do nothing
 					puts("Invalid command \n\r");
 					break;
@@ -254,6 +271,23 @@ void main()
 				// the final result is in 100mm/ms
 				yspeed = (1000*TOCM*my/(int)(dtime/1000));
 			}
+			// here should be the main control function calling each sub control functions depending on the position
+			/*if( y < distanceTarget)
+			{
+				// possibly need something more clever with the position...
+				speedControl( speedTarget, yspeed, dtime)
+				angleCorrection( angle, 0 );
+			}
+			else
+			{
+				if( distanceDone < 600)
+				{
+					// possibly need something more clever with the position...
+					speedControl( speedTarget, yspeed, dtime)
+						angleCorrection( angle, angleTarget );
+				}
+			}*/
+
 			speedControl(speedTarget, yspeed, dtime); // control the speed of the car
 			angleCorrection( angle, 0 );
 
