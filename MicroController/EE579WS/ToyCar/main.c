@@ -239,13 +239,13 @@ void main()
 					// calculate the final coordinates
 					if( (angleTarget >= -90) && (angleTarget <= 90) ) // if the angle is between -90 and 90, no - at the cos
 					{
-						xF = (600 - distanceTarget) * sinf( (float)angleTarget);
-						yF = ((600 - distanceTarget) * cosf( (float)angleTarget) ) + distanceTarget;
+						xF = (600 - distanceTarget) * sinf( (float)angleTarget/(float)TODEG);
+						yF = ((600 - distanceTarget) * cosf( (float)angleTarget/(float)TODEG) ) + distanceTarget;
 					}
 					else // else - at the cos
 					{
-						xF = (600 - distanceTarget) * sinf( (float)angleTarget);
-						yF = ((600 - distanceTarget) *(-cosf((float) angleTarget))) + distanceTarget;
+						xF = (600 - distanceTarget) * sinf( (float)angleTarget/(float)TODEG);
+						yF = ((600 - distanceTarget) *(-cosf((float) angleTarget/(float)TODEG))) + distanceTarget;
 					}
 					break;
 
