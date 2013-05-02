@@ -40,6 +40,8 @@ unsigned long dtime=0; // time variable which hold the difference between the la
 float x = 0; // the x position (in cm) of the car within the global coordinates system
 float y = 0; // the y position (in cm) of the car within the global coordinates system
 float angle = 0; // the angle (in radians) of the car with respect to the y axis within the global coordinates system
+int speedTarget = 0; // The wanted speed for the car
+signed int yspeed=0; // The measured-calculated speed of the car
 
 /*
  * ======== Functions ========
@@ -55,10 +57,8 @@ void main()
 	// Main variables
 	char buf[10]; // buffer used to read an input (string) from the user by serial
 	char bufferin; // buffer used to read an input (char) from the user by serial
-	int speedTarget = 0; // The wanted speed for the car
 	int distanceTarget = 0; // The distance before the turn (in cm)
 	int angleTarget = 0; // the angle to turn (in degrees)
-	signed int yspeed=0; // The measured-calculated speed of the car
 	int mx, my; // The variable used to hold the mouse measurements (movement in x and y)
 	// at the beginning of the program, mx can also be used to make sure that the serial connection is established
 
@@ -328,7 +328,7 @@ void main()
 
 			// TO BE REMOVED
 			speedControl(speedTarget, yspeed, dtime); // control the speed of the car
-			angleCorrection( angle, 0 );
+			//angleCorrection( angle, 0 );
 			// END TO BE REMOVED
 
 		}

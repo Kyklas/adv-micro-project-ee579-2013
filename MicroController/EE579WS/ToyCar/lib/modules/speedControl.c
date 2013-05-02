@@ -14,7 +14,7 @@ void speedControl( int speedTarget, int speedCur, int dt)
 {
 	static int speedError = 0;
 	static int speedIntegral = 0;
-	int goingForward=0;
+	static int goingForward=0;
 
 	// if the speed target is 0, stop the car and reset the integral variable
 	if(speedTarget == 0)
