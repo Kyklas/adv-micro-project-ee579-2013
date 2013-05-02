@@ -45,7 +45,7 @@ float angle = 0; // the angle (in radians) of the car with respect to the y axis
  * ======== Functions ========
  */
 void computePosition(int8_t mx, int8_t my); // the math model function which update x, y and angle depending on the mouse measurements
-
+int positionControl( int xTarget, int yTarget); // the function which operate some control on the position, call angleControl and speedControl
 /*
  *  ======== main ========
  */
@@ -61,6 +61,10 @@ void main()
 	signed int yspeed=0; // The measured-calculated speed of the car
 	int mx, my; // The variable used to hold the mouse measurements (movement in x and y)
 	// at the beginning of the program, mx can also be used to make sure that the serial connection is established
+
+	int step = 0; // used to know the step of the program we are in : 0 : beginning, 1: turning point, 2: end
+	int xF = 0; // variable containing the final position of the car (x, cm)
+	int yF = 0; // variable containing the final position of the car (y, cm)
 
 	// Variables to be checked/deleted *******************************************************************************************
 	int i = 0; // general usage counter : currently used to display things once every 5 iteration of the maths model TO BE DELETED
@@ -124,11 +128,27 @@ void main()
 				/***** T-L-H keys are used for outputing the mouse data, you won't need to use them ****/
 
 				case 't' : // try to write on via serial and then check the written value
+					// also try the car going forward
 					SPI_Write(0x42,0x42);
 					SPI_DelayWtR();
 					mx=SPI_Read(0x42);
 					puts("Test ");
 					putx(mx,0);
+					puts("\n\r");
+					forward();
+					speed( speedTarget);
+					break;
+
+				case '+' :  // increase the speed (for the test)
+					speedTarget+=10;
+					putsd(speedTarget);
+					speed( speedTarget);
+					puts("\n\r");
+					break;
+				case '-' :  // disminuish the speed (for the test)
+					speedTarget-=10;
+					putsd(speedTarget);
+					speed( speedTarget);
 					puts("\n\r");
 					break;
 
@@ -216,6 +236,17 @@ void main()
 					angleTarget = atoi(buf); // convert it from string to a number
 					puts("\n\rAngle :  "); // display the new target angle
 					putsd((int16_t)(angleTarget));
+					// calculate the final coordinates
+					if( (angleTarget >= -90) && (angleTarget <= 90) ) // if the angle is between -90 and 90, no - at the cos
+					{
+						xF = (600 - distanceTarget) * sinf( (float)angleTarget);
+						yF = ((600 - distanceTarget) * cosf( (float)angleTarget) ) + distanceTarget;
+					}
+					else // else - at the cos
+					{
+						xF = (600 - distanceTarget) * sinf( (float)angleTarget);
+						yF = ((600 - distanceTarget) *(-cosf((float) angleTarget))) + distanceTarget;
+					}
 					break;
 
 				default: // default case : warning message and do nothing
@@ -259,8 +290,8 @@ void main()
 					putsd((int16_t)(x*100));
 					puts("\n\ry ");
 					putsd((int16_t)(y*100));
-					*/puts("\n\ra ");
-					putsd((int16_t)(angle*TODEG*100));
+					puts("\n\ra ");
+					putsd((int16_t)(angle*TODEG*100));*/
 				}
 				// END OF TO BE REMOVED
 
@@ -271,25 +302,34 @@ void main()
 				// the final result is in 100mm/ms
 				yspeed = (1000*TOCM*my/(int)(dtime/1000));
 			}
+
 			// here should be the main control function calling each sub control functions depending on the position
-			/*if( y < distanceTarget)
+			/*
+			 *  //2 Control the position so as to reach the destination
+			if( step == 0) // if the turning point is not reached yet
 			{
-				// possibly need something more clever with the position...
-				speedControl( speedTarget, yspeed, dtime)
-				angleCorrection( angle, 0 );
+				step = positionControl( 0, distanceTarget); // try to reach the turning point
 			}
-			else
+			else // the turning point has been reached
 			{
-				if( distanceDone < 600)
+				if( step == 1) // if the end point is not reached yet
 				{
-					// possibly need something more clever with the position...
-					speedControl( speedTarget, yspeed, dtime)
-						angleCorrection( angle, angleTarget );
+					step = positionControl( xF, yF); // try to go to the end point
+					step+=1; // the line above return 0 if the end is not reached, 1 iof the end is reached
+					// it is requiered to continue as long as . is returned so +1
+					// it is needed to stop once the end as been reached so return 2 so +1 again
+				}
+				else // end reached, stop
+				{
+					stop();
+					// gimmick mario ??
 				}
 			}*/
 
+			// TO BE REMOVED
 			speedControl(speedTarget, yspeed, dtime); // control the speed of the car
 			angleCorrection( angle, 0 );
+			// END TO BE REMOVED
 
 		}
 
@@ -332,4 +372,31 @@ void computePosition(int8_t mx, int8_t my)
 void WDT_Int()
 {
 	time+=682;
+}
+
+/* The function which deals with the position control
+ * Uses the variable x, y and angle of the main
+ * Take into parameter the current target (x,u)
+ * Return 1 if the current position is at less than 20cm
+ * from the target position or 0 otherwise
+ */
+int positionControl( int xTarget, int yTarget)
+{
+	int yD = 0; // variable holding the difference between the target position and the current position (x,cm)
+	int xD = 0; // variable holding the difference between the target position and the current position (y,cm)
+	float alpha = 0; // 'cap' angle to reach to go toward the right position
+	xD = x - xTarget;
+	yD = y - yTarget;
+
+	if( sqrt( pow(xD,2) + pow(yD,2) ) < 20) // are we at less than 20cm from the target ? (20 cm may change)
+	{
+		return 1;
+	}
+	else // do the position control
+	{
+		alpha = atan2f( (float) yD, (float) xD ); // get the 'cap' angle
+		speedControl(speedTarget, yspeed, dtime); // control the speed of the car
+		angleCorrection( angle, alpha ); // control the angle of the car so as to reach the target position
+		return 0;
+	}
 }
