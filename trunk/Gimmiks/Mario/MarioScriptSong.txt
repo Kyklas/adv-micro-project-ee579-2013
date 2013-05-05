@@ -1,0 +1,351 @@
+:beep frequency 660 length 100 ;
+:delay 0 150 ;
+:beep frequency 660 length 100 ;
+:delay 0 300 ;
+:beep frequency 660 length 100 ;
+:delay 0 300 ;
+:beep frequency 510 length 100 ;
+:delay 0 100 ;
+:beep frequency 660 length 100 ;
+:delay 0 300 ;
+:beep frequency 770 length 100 ;
+:delay 0 550 ;
+:beep frequency 380 length 100 ;
+:delay 0 575 ;
+
+:beep frequency 510 length 100 ;
+:delay 0 450 ;
+:beep frequency 380 length 100 ;
+:delay 0 400 ;
+:beep frequency 320 length 100 ;
+:delay 0 500 ;
+:beep frequency 440 length 100 ;
+:delay 0 300 ;
+:beep frequency 480 length 80 ;
+:delay 0 330 ;
+:beep frequency 450 length 100 ;
+:delay 0 150 ;
+:beep frequency 430 length 100 ;
+:delay 0 300 ;
+:beep frequency 380 length 100 ;
+:delay 0 200 ;
+:beep frequency 660 length 80 ;
+:delay 0 200 ;
+:beep frequency 760 length 50 ;
+:delay 0 150 ;
+:beep frequency 860 length 100 ;
+:delay 0 300 ;
+:beep frequency 700 length 80 ;
+:delay 0 150 ;
+:beep frequency 760 length 50 ;
+:delay 0 350 ;
+:beep frequency 660 length 80 ;
+:delay 0 300 ;
+:beep frequency 520 length 80 ;
+:delay 0 150 ;
+:beep frequency 580 length 80 ;
+:delay 0 150 ;
+:beep frequency 480 length 80 ;
+:delay 0 500 ;
+
+:beep frequency 510 length 100 ;
+:delay 0 450 ;
+:beep frequency 380 length 100 ;
+:delay 0 400 ;
+:beep frequency 320 length 100 ;
+:delay 0 500 ;
+:beep frequency 440 length 100 ;
+:delay 0 300 ;
+:beep frequency 480 length 80 ;
+:delay 0 330 ;
+:beep frequency 450 length 100 ;
+:delay 0 150 ;
+:beep frequency 430 length 100 ;
+:delay 0 300 ;
+:beep frequency 380 length 100 ;
+:delay 0 200 ;
+:beep frequency 660 length 80 ;
+:delay 0 200 ;
+:beep frequency 760 length 50 ;
+:delay 0 150 ;
+:beep frequency 860 length 100 ;
+:delay 0 300 ;
+:beep frequency 700 length 80 ;
+:delay 0 150 ;
+:beep frequency 760 length 50 ;
+:delay 0 350 ;
+:beep frequency 660 length 80 ;
+:delay 0 300 ;
+:beep frequency 520 length 80 ;
+:delay 0 150 ;
+:beep frequency 580 length 80 ;
+:delay 0 150 ;
+:beep frequency 480 length 80 ;
+:delay 0 500 ;
+
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+
+:beep frequency 760 length 100 ;
+:delay 0 100 ;
+:beep frequency 720 length 100 ;
+:delay 0 150 ;
+:beep frequency 680 length 100 ;
+:delay 0 150 ;
+:beep frequency 620 length 150 ;
+:delay 0 300 ;
+
+:beep frequency 650 length 150 ;
+:delay 0 300 ;
+:beep frequency 380 length 100 ;
+:delay 0 150 ;
+:beep frequency 430 length 100 ;
+:delay 0 150 ;
+
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+:beep frequency 430 length 100 ;
+:delay 0 150 ;
+:beep frequency 500 length 100 ;
+:delay 0 100 ;
+:beep frequency 570 length 100 ;
+:delay 0 220 ;
+
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+
+:beep frequency 760 length 100 ;
+:delay 0 100 ;
+:beep frequency 720 length 100 ;
+:delay 0 150 ;
+:beep frequency 680 length 100 ;
+:delay 0 150 ;
+:beep frequency 620 length 150 ;
+:delay 0 300 ;
+
+:beep frequency 650 length 200 ;
+:delay 0 300 ;
+
+:beep frequency 1020 length 80 ;
+:delay 0 300 ;
+:beep frequency 1020 length 80 ;
+:delay 0 150 ;
+:beep frequency 1020 length 80 ;
+:delay 0 300 ;
+
+:beep frequency 380 length 100 ;
+:delay 0 300 ;
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+
+:beep frequency 760 length 100 ;
+:delay 0 100 ;
+:beep frequency 720 length 100 ;
+:delay 0 150 ;
+:beep frequency 680 length 100 ;
+:delay 0 150 ;
+:beep frequency 620 length 150 ;
+:delay 0 300 ;
+
+:beep frequency 650 length 150 ;
+:delay 0 300 ;
+:beep frequency 380 length 100 ;
+:delay 0 150 ;
+:beep frequency 430 length 100 ;
+:delay 0 150 ;
+
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+:beep frequency 430 length 100 ;
+:delay 0 150 ;
+:beep frequency 500 length 100 ;
+:delay 0 100 ;
+:beep frequency 570 length 100 ;
+:delay 0 420 ;
+
+:beep frequency 585 length 100 ;
+:delay 0 450 ;
+
+:beep frequency 550 length 100 ;
+:delay 0 420 ;
+
+:beep frequency 500 length 100 ;
+:delay 0 360 ;
+
+:beep frequency 380 length 100 ;
+:delay 0 300 ;
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+:beep frequency 500 length 100 ;
+:delay 0 150 ;
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+
+:beep frequency 760 length 100 ;
+:delay 0 100 ;
+:beep frequency 720 length 100 ;
+:delay 0 150 ;
+:beep frequency 680 length 100 ;
+:delay 0 150 ;
+:beep frequency 620 length 150 ;
+:delay 0 300 ;
+
+:beep frequency 650 length 150 ;
+:delay 0 300 ;
+:beep frequency 380 length 100 ;
+:delay 0 150 ;
+:beep frequency 430 length 100 ;
+:delay 0 150 ;
+
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+:beep frequency 430 length 100 ;
+:delay 0 150 ;
+:beep frequency 500 length 100 ;
+:delay 0 100 ;
+:beep frequency 570 length 100 ;
+:delay 0 220 ;
+
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+
+:beep frequency 760 length 100 ;
+:delay 0 100 ;
+:beep frequency 720 length 100 ;
+:delay 0 150 ;
+:beep frequency 680 length 100 ;
+:delay 0 150 ;
+:beep frequency 620 length 150 ;
+:delay 0 300 ;
+
+:beep frequency 650 length 200 ;
+:delay 0 300 ;
+
+:beep frequency 1020 length 80 ;
+:delay 0 300 ;
+:beep frequency 1020 length 80 ;
+:delay 0 150 ;
+:beep frequency 1020 length 80 ;
+:delay 0 300 ;
+
+:beep frequency 380 length 100 ;
+:delay 0 300 ;
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+
+:beep frequency 760 length 100 ;
+:delay 0 100 ;
+:beep frequency 720 length 100 ;
+:delay 0 150 ;
+:beep frequency 680 length 100 ;
+:delay 0 150 ;
+:beep frequency 620 length 150 ;
+:delay 0 300 ;
+
+:beep frequency 650 length 150 ;
+:delay 0 300 ;
+:beep frequency 380 length 100 ;
+:delay 0 150 ;
+:beep frequency 430 length 100 ;
+:delay 0 150 ;
+
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+:beep frequency 430 length 100 ;
+:delay 0 150 ;
+:beep frequency 500 length 100 ;
+:delay 0 100 ;
+:beep frequency 570 length 100 ;
+:delay 0 420 ;
+
+:beep frequency 585 length 100 ;
+:delay 0 450 ;
+
+:beep frequency 550 length 100 ;
+:delay 0 420 ;
+
+:beep frequency 500 length 100 ;
+:delay 0 360 ;
+
+:beep frequency 380 length 100 ;
+:delay 0 300 ;
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+:beep frequency 500 length 100 ;
+:delay 0 150 ;
+:beep frequency 500 length 100 ;
+:delay 0 300 ;
+
+:beep frequency 500 length 60 ;
+:delay 0 150 ;
+:beep frequency 500 length 80 ;
+:delay 0 300 ;
+:beep frequency 500 length 60 ;
+:delay 0 350 ;
+:beep frequency 500 length 80 ;
+:delay 0 150 ;
+:beep frequency 580 length 80 ;
+:delay 0 350 ;
+:beep frequency 660 length 80 ;
+:delay 0 150 ;
+:beep frequency 500 length 80 ;
+:delay 0 300 ;
+:beep frequency 430 length 80 ;
+:delay 0 150 ;
+:beep frequency 380 length 80 ;
+:delay 0 600 ;
+
+:beep frequency 500 length 60 ;
+:delay 0 150 ;
+:beep frequency 500 length 80 ;
+:delay 0 300 ;
+:beep frequency 500 length 60 ;
+:delay 0 350 ;
+:beep frequency 500 length 80 ;
+:delay 0 150 ;
+:beep frequency 580 length 80 ;
+:delay 0 150 ;
+:beep frequency 660 length 80 ;
+:delay 0 550 ;
+
+:beep frequency 870 length 80 ;
+:delay 0 325 ;
+:beep frequency 760 length 80 ;
+:delay 0 600 ;
+
+:beep frequency 500 length 60 ;
+:delay 0 150 ;
+:beep frequency 500 length 80 ;
+:delay 0 300 ;
+:beep frequency 500 length 60 ;
+:delay 0 350 ;
+:beep frequency 500 length 80 ;
+:delay 0 150 ;
+:beep frequency 580 length 80 ;
+:delay 0 350 ;
+:beep frequency 660 length 80 ;
+:delay 0 150 ;
+:beep frequency 500 length 80 ;
+:delay 0 300 ;
+:beep frequency 430 length 80 ;
+:delay 0 150 ;
+:beep frequency 380 length 80 ;
+:delay 0 600 ;
+
+:beep frequency 660 length 100 ;
+:delay 0 150 ;
+:beep frequency 660 length 100 ;
+:delay 0 300 ;
+:beep frequency 660 length 100 ;
+:delay 0 300 ;
+:beep frequency 510 length 100 ;
+:delay 0 100 ;
+:beep frequency 660 length 100 ;
+:delay 0 300 ;
+:beep frequency 770 length 100 ;
+:delay 0 550 ;
+:beep frequency 380 length 100 ;
+:delay 0 575 ;
