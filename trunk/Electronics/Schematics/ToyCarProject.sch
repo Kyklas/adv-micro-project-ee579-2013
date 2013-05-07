@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date 18/03/2013 15:27:28
+EESchema Schematic File Version 2  date 07/05/2013 16:46:18
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -36,7 +36,7 @@ $Descr A4 11700 8267
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "18 mar 2013"
+Date "7 may 2013"
 Rev ""
 Comp ""
 Comment1 ""
@@ -44,14 +44,24 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text Label 6300 4050 0    60   ~ 0
+Text Label 1100 3950 0    60   ~ 0
 GND
+Wire Wire Line
+	1100 3950 1100 3500
 Connection ~ 6850 4050
 Wire Wire Line
-	7550 4050 5150 4050
+	5150 4050 5650 4050
+Wire Wire Line
+	5650 4050 6300 4050
+Wire Wire Line
+	6300 4050 6850 4050
+Wire Wire Line
+	6850 4050 7550 4050
 Connection ~ 6850 3650
 Wire Wire Line
-	6950 3650 6700 3650
+	6700 3650 6850 3650
+Wire Wire Line
+	6850 3650 6950 3650
 Connection ~ 6300 4050
 Wire Wire Line
 	6300 4050 6300 3950
@@ -59,14 +69,14 @@ Connection ~ 5650 3650
 Wire Wire Line
 	5900 3650 5650 3650
 Wire Wire Line
-	5100 4550 5100 4700
-Wire Wire Line
-	5100 4700 5850 4700
-Wire Wire Line
 	7600 4800 9700 4800
 Connection ~ 10650 5500
 Wire Wire Line
-	10650 5200 10650 6200
+	10650 6200 10650 5850
+Wire Wire Line
+	10650 5850 10650 5500
+Wire Wire Line
+	10650 5500 10650 5200
 Wire Wire Line
 	9750 6200 9450 6200
 Wire Wire Line
@@ -82,7 +92,9 @@ Wire Wire Line
 Wire Wire Line
 	7600 5300 8100 5300
 Wire Wire Line
-	8100 5300 8100 3250
+	8100 5300 8100 5200
+Wire Wire Line
+	8100 5200 8100 3250
 Wire Wire Line
 	8100 3250 10350 3250
 Connection ~ 8850 2400
@@ -94,7 +106,9 @@ Wire Wire Line
 Wire Wire Line
 	8700 3050 8700 2950
 Wire Wire Line
-	8700 2950 9050 2950
+	8700 2950 8850 2950
+Wire Wire Line
+	8850 2950 9050 2950
 Wire Wire Line
 	8750 2650 8750 3150
 Wire Wire Line
@@ -102,7 +116,9 @@ Wire Wire Line
 Wire Wire Line
 	10000 2250 8850 2250
 Wire Wire Line
-	8850 2250 8850 2950
+	8850 2250 8850 2400
+Wire Wire Line
+	8850 2400 8850 2950
 Wire Wire Line
 	10500 2250 10550 2250
 Wire Wire Line
@@ -133,26 +149,40 @@ Wire Wire Line
 Wire Wire Line
 	3550 4950 3750 4950
 Wire Wire Line
-	2550 5100 2550 4650
+	2550 4650 2550 4750
+Wire Wire Line
+	2550 4750 2550 5000
+Wire Wire Line
+	2550 5000 2550 5100
 Connection ~ 2550 4100
 Wire Wire Line
 	2250 4450 2000 4450
 Wire Wire Line
 	3550 5000 3200 5000
 Wire Wire Line
-	2550 4250 2550 4000
+	2550 4250 2550 4100
 Wire Wire Line
-	2550 4000 3250 4000
+	2550 4100 2550 4000
+Wire Wire Line
+	2550 4000 2900 4000
+Wire Wire Line
+	2900 4000 3250 4000
 Wire Wire Line
 	3250 4000 3250 4250
 Wire Wire Line
-	3250 5500 2550 5500
+	2550 5500 2900 5500
+Wire Wire Line
+	2900 5500 3250 5500
 Connection ~ 2900 5500
 Wire Wire Line
-	2550 4750 2850 4750
+	2850 4750 2700 4750
+Wire Wire Line
+	2700 4750 2550 4750
 Connection ~ 2550 4750
 Wire Wire Line
-	2950 4750 3250 4750
+	2950 4750 3050 4750
+Wire Wire Line
+	3050 4750 3250 4750
 Connection ~ 3250 4750
 Wire Wire Line
 	2900 3900 2900 4000
@@ -175,7 +205,9 @@ Wire Wire Line
 	3050 4700 3050 4750
 Connection ~ 3050 4750
 Wire Wire Line
-	3250 5100 3250 4650
+	3250 4650 3250 4750
+Wire Wire Line
+	3250 4750 3250 5100
 Wire Notes Line
 	1700 3600 1700 5850
 Wire Notes Line
@@ -185,7 +217,9 @@ Wire Notes Line
 Connection ~ 3750 2450
 Connection ~ 2850 2650
 Wire Wire Line
-	3450 2650 2250 2650
+	2250 2650 2850 2650
+Wire Wire Line
+	2850 2650 3450 2650
 Wire Notes Line
 	3900 2900 1750 2900
 Wire Notes Line
@@ -263,6 +297,37 @@ Wire Wire Line
 Connection ~ 5650 4050
 Wire Wire Line
 	7450 3650 7550 3650
+Wire Wire Line
+	1100 2650 1100 2900
+$Comp
+L GND #PWR?
+U 1 1 51892109
+P 1100 3950
+F 0 "#PWR?" H 1100 3950 30  0001 C CNN
+F 1 "GND" H 1100 3880 30  0001 C CNN
+	1    1100 3950
+	1    0    0    -1  
+$EndComp
+$Comp
+L BATTERY 3V
+U 1 1 518920D5
+P 5150 3150
+F 0 "3V (2 AAA)" H 5150 3350 50  0000 C CNN
+F 1 "BATTERY_Front" H 5150 2960 50  0000 C CNN
+	1    5150 3150
+	0    1    1    0   
+$EndComp
+$Comp
+L +BAT_CAR #PWR?
+U 1 1 513C68E2
+P 1100 2650
+F 0 "#PWR?" H 1100 2600 20  0001 C CNN
+F 1 "+BAT_CAR" H 1100 2750 30  0000 C CNN
+	1    1100 2650
+	1    0    0    -1  
+$EndComp
+Text Label 6300 4050 0    60   ~ 0
+GND
 Text Label 7550 3650 0    60   ~ 0
 Link_Rst
 Text Label 6850 3650 0    60   ~ 0
@@ -322,15 +387,6 @@ F 1 "LD1117S33" H 6300 3900 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +BAT_CAR #PWR?
-U 1 1 513C68E2
-P 5100 4550
-F 0 "#PWR?" H 5100 4500 20  0001 C CNN
-F 1 "+BAT_CAR" H 5100 4650 30  0000 C CNN
-	1    5100 4550
-	1    0    0    -1  
-$EndComp
-$Comp
 L GND #PWR?
 U 1 1 513C68E8
 P 8500 5000
@@ -351,20 +407,20 @@ F 1 "SPEAKER" H 9900 4450 70  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L BATTERY BT?
+L BATTERY 4.5V
 U 1 1 513C688D
-P 5150 3150
-F 0 "BT?" H 5150 3350 50  0000 C CNN
-F 1 "BATTERY_Top" H 5150 2960 50  0000 C CNN
-	1    5150 3150
+P 1100 3200
+F 0 "4.5V ( 3 AA)" H 1100 3400 50  0000 C CNN
+F 1 "BATTERY_Top" H 1100 3010 50  0000 C CNN
+	1    1100 3200
 	0    1    1    0   
 $EndComp
 $Comp
-L BATTERY BT?
+L BATTERY 1.5V
 U 1 1 513C6889
 P 5150 3750
-F 0 "BT?" H 5150 3950 50  0000 C CNN
-F 1 "BATTERY_Front" H 5150 3560 50  0000 C CNN
+F 0 "1.5V (1 AAA)" H 5150 3950 50  0000 C CNN
+F 1 "BATTERY_Below" H 5150 3560 50  0000 C CNN
 	1    5150 3750
 	0    1    1    0   
 $EndComp
@@ -551,7 +607,7 @@ L R R?
 U 1 1 512B3E9B
 P 4400 2800
 F 0 "R?" V 4480 2800 50  0000 C CNN
-F 1 "330" V 4400 2800 50  0000 C CNN
+F 1 "470" V 4400 2800 50  0000 C CNN
 	1    4400 2800
 	0    -1   -1   0   
 $EndComp
@@ -560,7 +616,7 @@ L R R?
 U 1 1 512B3E9A
 P 4400 2450
 F 0 "R?" V 4480 2450 50  0000 C CNN
-F 1 "330" V 4400 2450 50  0000 C CNN
+F 1 "470" V 4400 2450 50  0000 C CNN
 	1    4400 2450
 	0    -1   -1   0   
 $EndComp
@@ -580,7 +636,7 @@ L R R?
 U 1 1 512B3CE2
 P 4400 5600
 F 0 "R?" V 4480 5600 50  0000 C CNN
-F 1 "470" V 4400 5600 50  0000 C CNN
+F 1 "330" V 4400 5600 50  0000 C CNN
 	1    4400 5600
 	0    -1   -1   0   
 $EndComp
@@ -589,7 +645,7 @@ L R R?
 U 1 1 512B3CD7
 P 4400 5300
 F 0 "R?" V 4480 5300 50  0000 C CNN
-F 1 "470" V 4400 5300 50  0000 C CNN
+F 1 "330" V 4400 5300 50  0000 C CNN
 	1    4400 5300
 	0    -1   -1   0   
 $EndComp
