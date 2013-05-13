@@ -8,5 +8,6 @@ void stop();
 
 void left();
 void right();
+void straight();
 
 #endif

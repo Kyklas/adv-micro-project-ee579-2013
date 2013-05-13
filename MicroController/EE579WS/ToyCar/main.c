@@ -289,9 +289,9 @@ void main()
 					/*puts("\n\r\n\rx ");
 					putsd((int16_t)(x*100));
 					puts("\n\ry ");
-					putsd((int16_t)(y*100));
+					putsd((int16_t)(y*100));*/
 					puts("\n\ra ");
-					putsd((int16_t)(angle*TODEG*100));*/
+					putsd((int16_t)(angle*TODEG*100));
 				}
 				// END OF TO BE REMOVED
 
@@ -328,7 +328,7 @@ void main()
 
 			// TO BE REMOVED
 			speedControl(speedTarget, yspeed, dtime); // control the speed of the car
-			//angleCorrection( angle, 0 );
+			angleCorrection( (int)(TODEG*angle), 0 );
 			// END TO BE REMOVED
 
 		}
@@ -338,13 +338,13 @@ void main()
 		{
 			P2OUT&=~BIT5;
 			P2OUT|=BIT4;
-			continue;//************************************************what is that for ????
+			//continue;
 		}
-		if((P2OUT&BIT4) && ((time%600000)<300000))
+		else if((P2OUT&BIT4) && ((time%600000)<300000))
 		{
 			P2OUT&=~BIT4;
 			P2OUT|=BIT5;
-			continue;//************************************************what is that for ????
+			//continue;
 		}
 	}
 }
@@ -361,6 +361,14 @@ void computePosition(int8_t mx, int8_t my)
 
 	alpha = atan2f( ((float) mx), ((float)(6.5f*250/2.54f)) );// get the modification of the angle of the car within the global coordinate system
 	angle -= alpha; // update total angle in radians
+	if( angle >PI)
+	{
+		angle = angle - 2*PI;
+	}
+	if( angle < -PI)
+	{
+		angle = angle + 2*PI;
+	}
 	dx = (float)(my * sinf(angle));// get the modification of x in the global coordinates system
 	dy = (float)(my * cosf(angle));// get the modification of the y in the global coordinates system
 	// update x and y using the x and y variation previously calculated
@@ -396,7 +404,7 @@ int positionControl( int xTarget, int yTarget)
 	{
 		alpha = atan2f( (float) yD, (float) xD ); // get the 'cap' angle
 		speedControl(speedTarget, yspeed, dtime); // control the speed of the car
-		angleCorrection( angle, alpha ); // control the angle of the car so as to reach the target position
+		angleCorrection( (int)(TODEG*angle), (int)(TODEG*alpha) ); // control the angle of the car so as to reach the target position
 		return 0;
 	}
 }

@@ -56,7 +56,7 @@ void speedControl( int speedTarget, int speedCur, int dt)
 			{
 				speedIntegral = constPWM;
 			}
-			if( speedIntegral <thresholdPWM) // if we have not reached the threshold, continue to go backward at the maintaining speed
+			if( speedIntegral < thresholdPWM) // if we have not reached the threshold, continue to go backward at the maintaining speed
 			{
 				speedIntegral = thresholdPWM;
 				backward();
