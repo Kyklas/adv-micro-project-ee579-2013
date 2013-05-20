@@ -42,12 +42,13 @@ void stop()
 	//P2SEL2&=~(BIT2|BIT1);
 	P2SEL&=~(BIT2|BIT1);
 	TA1CCR1 = 0;
-	straight();
+	//straight();
 }
 
 // function used to turn on the right
 void right()
 {
+	//puts("\n\rrightFun");
 	if(!(P1OUT&BIT4))  // Test for turning left
 		P1OUT |= BIT3;
 	else
@@ -57,6 +58,7 @@ void right()
 // function used to turn on the left
 void left()
 {
+	//puts("\n\rleftFun");
 	if(!(P1OUT&BIT3)) // Test for turning right
 		P1OUT |= BIT4;
 	else
@@ -66,5 +68,6 @@ void left()
 // function which disable any rotation
 void straight()
 {
+	//puts("\n\rstrCorr");
 	P1OUT&=~(BIT4|BIT3);  // Disable turning
 }

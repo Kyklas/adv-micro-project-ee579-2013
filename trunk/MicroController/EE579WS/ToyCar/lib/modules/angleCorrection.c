@@ -17,13 +17,16 @@ void angleCorrection(int currentAngle, int targetAngle)
 	if(currentAngle > targetAngle + THRESHOLD )
 	{
 		left();
+		//puts("\n\rleftCorr");
 	}
 	else if(currentAngle < targetAngle - THRESHOLD)
 	{
 		right();
+		//puts("\n\rrightCorr");
 	}
 	else
 	{
 		straight();
+		//puts("\n\rstrCorr");
 	}
 }
