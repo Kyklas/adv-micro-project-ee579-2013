@@ -28,7 +28,7 @@
 #define PI 3.1415f // PI, used to convert from radian to degree
 #define TODEG 360.0f/(2.0f*PI) // used to convert an angle from radian to degree
 #define DEFAULTSPD 50 // the default speed of the car
-#define FINDIST 200 // the total distance that the car should travel
+#define FINDIST 600 // the total distance (cm) that the car should travel
 
 /*
  * ======== Global variables ========
@@ -242,6 +242,12 @@ void main()
 					putsd((int16_t)(angleTarget));
 					// calculate the final coordinates
 					angleT = (float)angleTarget * (float)(PI/180.0f);
+
+
+					xF = (int)((float)(FINDIST - distanceTarget) * sinf( angleT));
+					yF = (int)(((float)(FINDIST - distanceTarget) * cosf( angleT) )) + distanceTarget;
+
+					/*
 					if( (angleTarget >= -90) && (angleTarget <= 90) ) // if the angle is between -90 and 90, no - at the cos
 					{
 						xF = (int)((float)(FINDIST - distanceTarget) * sinf( angleT));
@@ -250,8 +256,10 @@ void main()
 					else // else - at the cos
 					{
 						xF = (int)((float)(FINDIST - distanceTarget) * sinf(angleT));
-						yF = (int)(((float)(distanceTarget - FINDIST) *cosf(angleT))) + distanceTarget;
+						yF = (int)(((float)(FINDIST - distanceTarget) *cosf(angleT))) + distanceTarget;
 					}
+					*/
+
 					/*puts("\n\rxF ");
 					putsd((int16_t)(xF));
 					puts("\n\ryF ");
@@ -297,12 +305,12 @@ void main()
 				{
 					i=0;
 					/* x and y position as well as angle display */
-					puts("\n\r\n\rx ");
+					/*puts("\n\r\n\rx ");
 					putsd((int16_t)(x));
 					puts("\n\ry ");
 					putsd((int16_t)(y));
 					puts("\n\ra ");
-					putsd((int16_t)(angle*TODEG));
+					putsd((int16_t)(angle*TODEG));*/
 				}
 				// END OF TO BE REMOVED
 
@@ -330,10 +338,15 @@ void main()
 					// it is requiered to continue as long as . is returned so +1
 					// it is needed to stop once the end as been reached so return 2 so +1 again
 				}
-				else // end reached, stop
+				else if( step == 2) // end reached, stop
 				{
+					straight();
 					stop();
-					// gimmick mario ??
+					step += 1;
+				}
+				else
+				{
+					// nothing !  sing victory !!!
 				}
 			}
 
@@ -406,8 +419,20 @@ int positionControl( int xTarget, int yTarget)
 	int xD = 0; // variable holding the difference between the target position and the current position (y,cm)
 	float alpha2 = 0; // 'cap' angle to reach to go toward the right position
 	float distance = 0; // used to hold the remaining distance to travel
-	xD = x - xTarget;
-	yD = y - yTarget;
+
+	/*puts("\n\r xt ");
+	putsd((int16_t)(xTarget));
+	puts("\n\r yt ");
+	putsd((int16_t)(yTarget));*/
+
+
+	xD = xTarget - x;
+	yD = yTarget - y;
+
+	/*puts("\n\r xd ");
+	putsd((int16_t)(xD));
+	puts("\n\r yd ");
+	putsd((int16_t)(yD));*/
 	distance  = sqrtf( powf((float)xD,2.0f) + powf((float)yD,2.0f) );
 
 	if( distance < 20.0f) // are we at less than 20cm from the target ? (20 cm may change)
@@ -416,7 +441,9 @@ int positionControl( int xTarget, int yTarget)
 	}
 	else // do the position control
 	{
-		alpha2 = atan2f( (float) yD, (float) xD ); // get the 'cap' angle
+		alpha2 = atan2f( (float) xD, (float) yD ); // get the 'cap' angle
+		/*puts("\n\r angT ");
+		putsd((int16_t)(TODEG*alpha2));*/
 		speedControl( speedTarget, yspeed, dtime); // control the speed of the car
 		angleCorrection( (int)(TODEG*angle), (int)(TODEG*alpha2) ); // control the angle of the car so as to reach the target position
 		return 0;
