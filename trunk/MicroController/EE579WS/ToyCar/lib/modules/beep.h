@@ -680,7 +680,7 @@ void ISR_playSong(void);
 void ISR_stopSong();
 
 void startbeep(int frequency);
-inline void stopbeep();
+void stopbeep();
 void playsong(const int song[],unsigned int size);
 
 #endif // BEEP_H
