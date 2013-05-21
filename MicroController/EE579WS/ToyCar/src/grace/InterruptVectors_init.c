@@ -33,7 +33,9 @@ void InterruptVectors_graceInit(void)
 
 /* Interrupt Function Prototypes */
 
+
 extern void WDT_Int(void);
+
 
 
 

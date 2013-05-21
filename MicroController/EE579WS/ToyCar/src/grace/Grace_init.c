@@ -8,8 +8,9 @@ extern void GPIO_graceInit(void);
 extern void BCSplus_graceInit(void);
 extern void USCI_B0_graceInit(void);
 extern void InterruptVectors_graceInit(void);
-extern void Timer1_A3_graceInit(void);
+extern void Timer0_A3_graceInit(void);
 extern void System_graceInit(void);
+extern void Timer1_A3_graceInit(void);
 extern void WDTplus_graceInit(void);
 
 #include <msp430.h>
@@ -56,10 +57,13 @@ void Grace_init(void)
     InterruptVectors_graceInit();
 
     /* initialize Config for the MSP430 A3 Timer0 */
-    Timer1_A3_graceInit();
+    Timer0_A3_graceInit();
 
     /* initialize Config for the MSP430 System Registers */
     System_graceInit();
+
+    /* initialize Config for the MSP430 A3 Timer0 */
+    Timer1_A3_graceInit();
 
     /* initialize Config for the MSP430 WDT+ */
     WDTplus_graceInit();
