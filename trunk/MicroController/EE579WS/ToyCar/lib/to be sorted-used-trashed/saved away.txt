@@ -103,3 +103,79 @@ from main
 					speed(s);
 					putd(TA1CCR1);
 					break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void playportal()
+{
+	extern unsigned long time;
+	unsigned long waittime;
+	unsigned int index;
+
+	for(index=0;(index<(sizeof(portal)/sizeof(int)));index+=2)
+	{
+		startbeep(portal[index]);
+		waittime = (unsigned long) portal[index+1];
+		waittime *=1000;
+		waittime += time;
+		while(time<waittime)
+		{
+			__delay_cycles(400);
+		}
+	}
+	stopbeep();
+}
+
+
+
+
+
+void playmario()
+{
+	extern unsigned long time;
+	unsigned long waittime;
+	unsigned int index;
+
+	for(index=0;(index<(sizeof(mario)/sizeof(int)));index+=2)
+	{
+		startbeep(mario[index]);
+		waittime = (unsigned long) mario[index+1];
+		waittime *=800;
+		waittime += time;
+		while(time<waittime)
+		{
+			__delay_cycles(400);
+		}
+	}
+	stopbeep();
+}
+
+
+
+
+
+
+
+

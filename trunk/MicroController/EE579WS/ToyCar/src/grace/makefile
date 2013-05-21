@@ -27,7 +27,7 @@ objs/%.obj: %.c makefile
 	$(CC) $(CCOPTS) $(CPPFLAGS) "$<"
 
 # rule to combine all objects into the grace.lib library
-grace.lib: objs/Grace_init.obj objs/CSL_init.obj objs/GPIO_init.obj objs/BCSplus_init.obj objs/USCI_B0_init.obj objs/InterruptVectors_init.obj objs/Timer1_A3_init.obj objs/System_init.obj objs/WDTplus_init.obj
+grace.lib: objs/Grace_init.obj objs/CSL_init.obj objs/GPIO_init.obj objs/BCSplus_init.obj objs/USCI_B0_init.obj objs/InterruptVectors_init.obj objs/Timer0_A3_init.obj objs/System_init.obj objs/Timer1_A3_init.obj objs/WDTplus_init.obj
 	@ echo ar430 $@ $< ...
 	$(AR) $@ $^
 

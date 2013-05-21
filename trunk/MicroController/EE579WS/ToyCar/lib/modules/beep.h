@@ -3,6 +3,9 @@
 #ifndef BEEP_H
 #define BEEP_H
 
+
+extern int* psong;
+
 static const int tetris[]={
 		330,150,
 		0,40,
@@ -93,7 +96,8 @@ static const int tetris[]={
 		370,150,
 		0,40,
 		330,150,
-		0,40
+		0,40,
+		0,0
 };
 
 static const int starwars[]={
@@ -223,7 +227,9 @@ static const int starwars[]={
 		0,100,
 		392,300,
 		0,150,
-		311,250
+		311,250,
+		0,0
+
 };
 
 static const int mario[]={
@@ -538,7 +544,8 @@ static const int mario[]={
 		770,100,
 		0,550,
 		380,100,
-		0,575
+		0,575,
+		0,0
 };
 
 static const int portal[]={
@@ -662,18 +669,18 @@ static const int portal[]={
 		0,50,
 		659,200,
 		739,100,
-		739,400
+		739,400,
+		0,0
 };
 
 #define SIZE_SONG(x) (sizeof((x))/sizeof(int))
 
+void ISR_startSong( int* song);
+void ISR_playSong(void);
+void ISR_stopSong();
+
 void startbeep(int frequency);
-void stopbeep();
-
-void playportal();
-
-void playmario();
-
+inline void stopbeep();
 void playsong(const int song[],unsigned int size);
 
 #endif // BEEP_H

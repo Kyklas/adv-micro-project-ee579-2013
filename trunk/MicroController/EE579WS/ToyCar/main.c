@@ -19,7 +19,7 @@
 #include "drive.h" // This is where the forward, backward, stop, turning and speed functions are defined
 #include "speedControl.h" // The speed control function
 #include "angleCorrection.h" // The angle control function
-
+#include "beep.h" // The gimmick about making the car sing !
 
 /*
  * ======== Constants ========
@@ -29,6 +29,9 @@
 #define TODEG 360.0f/(2.0f*PI) // used to convert an angle from radian to degree
 #define DEFAULTSPD 50 // the default speed of the car
 #define FINDIST 600 // the total distance (cm) that the car should travel
+
+// if debug is requiered, display of information via serial, better be connected with a cable !
+//#define DEBUG
 
 /*
  * ======== Global variables ========
@@ -58,19 +61,22 @@ void main()
 	// Main variables
 	char buf[10]; // buffer used to read an input (string) from the user by serial
 	char bufferin; // buffer used to read an input (char) from the user by serial
-	int distanceTarget = 0; // The distance before the turn (in cm)
+
+	int distanceTarget = 0; // the distance before the turn (in cm)
 	int angleTarget = 0; // the angle to turn (in degrees)
+	float angleT=0; // the angle to turn (converted in radian so float)
+
 	int mx, my; // The variable used to hold the mouse measurements (movement in x and y)
 	// at the beginning of the program, mx can also be used to make sure that the serial connection is established
 
-	int step = 0; // used to know the step of the program we are in : 0 : beginning, 1: turning point, 2: end
+	short step = 0; // used to know the step of the program we are in : 0 : beginning, 1: turning point, 2: end
+	short singing = 0; // used to know if the car should be singing while travelling
 	int xF = 0; // variable containing the final position of the car (x, cm)
 	int yF = 0; // variable containing the final position of the car (y, cm)
 
-	float angleT=0;
-
-	// Variables to be checked/deleted *******************************************************************************************
+#ifdef DEBUG
 	int i = 0; // general usage counter : currently used to display things once every 5 iteration of the maths model TO BE DELETED
+#endif
 
 	// Initialisation
 	CSL_init();                 // We have used 'Grace' to configure the timers for PWM and delays, this line includes those configs
@@ -128,6 +134,7 @@ void main()
 
 			switch(bufferin)
 			{
+#ifdef DEBUG
 				/***** T-L-H keys are used for outputing the mouse data, you won't need to use them ****/
 
 				case 't' : // try to write on via serial and then check the written value
@@ -141,20 +148,27 @@ void main()
 					forward();
 					speed( speedTarget);
 					break;
+#endif
+				case 'm' :
+#ifdef DEBUG
+					ISR_startSong( (int*)portal);
+#endif
 
+					singing = 1;
+					break;
 				case '+' :  // increase the speed (for the test)
 					speedTarget+=10;
 					putsd(speedTarget);
 					speed( speedTarget);
 					puts("\n\r");
 					break;
-				case '-' :  // disminuish the speed (for the test)
+				case '-' :  // Diminish the speed (for the test)
 					speedTarget-=10;
 					putsd(speedTarget);
 					speed( speedTarget);
 					puts("\n\r");
 					break;
-
+#ifdef DEBUG
 				case 'l' : // put the mouse sensor in low resolution mode
 					SPI_Write(0x0d,0x24);
 					SPI_DelayWtR();
@@ -172,6 +186,7 @@ void main()
 					putx(mx,0);
 					puts("\n\r");
 					break;
+#endif
 
 				case ' ' : 	// Stop the car, reset the speed target
 					puts("Stop \n\r");
@@ -179,7 +194,7 @@ void main()
 					speedTarget = 0;
 					step = 2;
 					break;
-
+#ifdef DEBUG
 				case 'w': // move forward
 					puts("Forward \n\r");
 					forward();
@@ -199,6 +214,7 @@ void main()
 				case 'd': // turn right
 					right();
 					break;
+#endif
 
 				case 'c' : // Modify the target speed, stop the car
 					puts("\nEnter a speed value for the car.");
@@ -212,16 +228,14 @@ void main()
 				case 'r' : // reset the X, Y and angle values
 					puts("Reset");
 					puts("\n\r");
-
-					/* TO BE REMOVED ****************************************************************************************/
+#ifdef DEBUG
 					// display the calculated x, y and angle before reseting them
-					/*putsd((int16_t)(x*100));
+					putsd((int16_t)(x*100));
 					puts("\n\ry ");
 					putsd((int16_t)(y*100));
 					puts("\n\ra ");
-					putsd((int16_t)(angle*TODEG*100));*/
-					// end of TO BE REMOVED
-
+					putsd((int16_t)(angle*TODEG*100));
+#endif
 					// reset the memorized-calculated x, y and angle of the car
 					x=0;
 					y=0;
@@ -235,37 +249,31 @@ void main()
 					distanceTarget = atoi(buf); // convert it from string to a number
 					puts("\n\rDistance :  "); // display the new target distance
 					putsd((int16_t)(distanceTarget));
+
 					puts("\nEnter the angle to turn (degrees) ");
 					getline(buf); // get the target angle entry
 					angleTarget = atoi(buf); // convert it from string to a number
 					puts("\n\rAngle :  "); // display the new target angle
 					putsd((int16_t)(angleTarget));
+
 					// calculate the final coordinates
 					angleT = (float)angleTarget * (float)(PI/180.0f);
-
-
 					xF = (int)((float)(FINDIST - distanceTarget) * sinf( angleT));
 					yF = (int)(((float)(FINDIST - distanceTarget) * cosf( angleT) )) + distanceTarget;
 
-					/*
-					if( (angleTarget >= -90) && (angleTarget <= 90) ) // if the angle is between -90 and 90, no - at the cos
-					{
-						xF = (int)((float)(FINDIST - distanceTarget) * sinf( angleT));
-						yF = (int)(((float)(FINDIST - distanceTarget) * cosf( angleT) )) + distanceTarget;
-					}
-					else // else - at the cos
-					{
-						xF = (int)((float)(FINDIST - distanceTarget) * sinf(angleT));
-						yF = (int)(((float)(FINDIST - distanceTarget) *cosf(angleT))) + distanceTarget;
-					}
-					*/
-
-					/*puts("\n\rxF ");
+#ifdef DEBUG
+					puts("\n\rxF ");
 					putsd((int16_t)(xF));
 					puts("\n\ryF ");
 					putsd((int16_t)(yF));
-					getc();*/
+					getc();
+#endif
 					step = 0; // to allow moving
+					// sing if singing mode !
+					if( singing == 1)
+					{
+						ISR_startSong((int*)portal);
+					}
 					break;
 
 				default: // default case : warning message and do nothing
@@ -294,25 +302,25 @@ void main()
 				// update the car actual position using the maths model
 				computePosition(mx,my);
 
-				// TO BE REMOVED
+#ifdef DEBUG
 				i++;
 				/* mx and my display*/
-				/*puts("\n\r");
+				puts("\n\rmx ");
 				putsd((int16_t)(mx));
-				puts(" ");
-				putsd((int16_t)(my));*/
+				puts(" my ");
+				putsd((int16_t)(my));
 				if( i%20 == 0)
 				{
 					i=0;
 					/* x and y position as well as angle display */
-					/*puts("\n\r\n\rx ");
+					puts("\n\r\n\rx ");
 					putsd((int16_t)(x));
 					puts("\n\ry ");
 					putsd((int16_t)(y));
 					puts("\n\ra ");
-					putsd((int16_t)(angle*TODEG));*/
+					putsd((int16_t)(angle*TODEG));
 				}
-				// END OF TO BE REMOVED
+#endif
 
 				// there have been new measurements so a new speed of the car can be calculated
 				// get the speed ==> movement in DPI is converted in mm ==> * TOCM * 10
@@ -329,32 +337,34 @@ void main()
 			{
 				step = positionControl( 0, distanceTarget); // try to reach the turning point
 			}
-			else // the turning point has been reached
+			// the turning point has been reached
+			else if( step == 1) // if the end point is not reached yet
 			{
-				if( step == 1) // if the end point is not reached yet
+				if( singing == 1)
 				{
-					step = positionControl( xF, yF); // try to go to the end point
-					step+=1; // the line above return 0 if the end is not reached, 1 iof the end is reached
-					// it is requiered to continue as long as . is returned so +1
-					// it is needed to stop once the end as been reached so return 2 so +1 again
+					ISR_startSong( (int*)starwars);
+					singing = 2;
 				}
-				else if( step == 2) // end reached, stop
-				{
-					straight();
-					stop();
-					step += 1;
-				}
-				else
-				{
-					// nothing !  sing victory !!!
-				}
+				step = positionControl( xF, yF); // try to go to the end point
+				step+=1; // the line above return 0 if the end is not reached, 1 iof the end is reached
+				// it is requiered to continue as long as . is returned so +1
+				// it is needed to stop once the end as been reached so return 2 so +1 again
 			}
-
-			// TO BE REMOVED
-			/*speedControl(speedTarget, yspeed, dtime); // control the speed of the car
-			angleCorrection( (int)(TODEG*angle), 0 );*/
-			// END TO BE REMOVED
-
+			else if( step == 2) // end reached, stop
+			{
+				if( singing == 2)
+				{
+					ISR_startSong( (int*)mario);
+					singing = 0;
+				}
+				straight();
+				stop();
+				step += 1;
+			}
+			else
+			{
+				// nothing !
+			}
 		}
 
 		/* This is to flash the two LEDs on top of the car :P */
@@ -362,13 +372,11 @@ void main()
 		{
 			P2OUT&=~BIT5;
 			P2OUT|=BIT4;
-			//continue;
 		}
 		else if((P2OUT&BIT4) && ((time%600000)<300000))
 		{
 			P2OUT&=~BIT4;
 			P2OUT|=BIT5;
-			//continue;
 		}
 	}
 }
@@ -404,6 +412,7 @@ void computePosition(int8_t mx, int8_t my)
 void WDT_Int()
 {
 	time+=682;
+	ISR_playSong();
 }
 
 /* The function which deals with the position control
@@ -420,19 +429,24 @@ int positionControl( int xTarget, int yTarget)
 	float alpha2 = 0; // 'cap' angle to reach to go toward the right position
 	float distance = 0; // used to hold the remaining distance to travel
 
-	/*puts("\n\r xt ");
+#ifdef DEBUG
+	puts("\n\r xt ");
 	putsd((int16_t)(xTarget));
 	puts("\n\r yt ");
-	putsd((int16_t)(yTarget));*/
+	putsd((int16_t)(yTarget));
+#endif
 
 
 	xD = xTarget - x;
 	yD = yTarget - y;
 
-	/*puts("\n\r xd ");
+#ifdef DEBUG
+	puts("\n\r xd ");
 	putsd((int16_t)(xD));
 	puts("\n\r yd ");
-	putsd((int16_t)(yD));*/
+	putsd((int16_t)(yD));
+#endif
+
 	distance  = sqrtf( powf((float)xD,2.0f) + powf((float)yD,2.0f) );
 
 	if( distance < 20.0f) // are we at less than 20cm from the target ? (20 cm may change)
@@ -442,8 +456,12 @@ int positionControl( int xTarget, int yTarget)
 	else // do the position control
 	{
 		alpha2 = atan2f( (float) xD, (float) yD ); // get the 'cap' angle
-		/*puts("\n\r angT ");
-		putsd((int16_t)(TODEG*alpha2));*/
+
+#ifdef DEBUG
+		puts("\n\r angT ");
+		putsd((int16_t)(TODEG*alpha2));
+#endif
+
 		speedControl( speedTarget, yspeed, dtime); // control the speed of the car
 		angleCorrection( (int)(TODEG*angle), (int)(TODEG*alpha2) ); // control the angle of the car so as to reach the target position
 		return 0;
