@@ -36,7 +36,7 @@ void ISR_playSong(void)
 
 
 /* play a note given a frequency */
-inline void startbeep(int frequency)
+ void startbeep(int frequency)
 {
 	if(frequency==0)
 	{
@@ -54,7 +54,7 @@ inline void startbeep(int frequency)
 
 
 /* stop playing a note */
-inline void stopbeep()
+void stopbeep()
 {
 	// Stop Timer_A
 	TA0CTL &= ~(MC1 + MC0); // Clear MCx bits to stop timer

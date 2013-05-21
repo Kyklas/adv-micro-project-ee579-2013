@@ -82,7 +82,7 @@ void main()
 	// Initialisation
 	CSL_init();                 // We have used 'Grace' to configure the timers for PWM and delays, this line includes those configs
 	init_uart();                // UART initialisation (serial), could be done with Grace
-	P2OUT|=BIT5;				// light on one of the LED on top of the car
+
 
 	puts("MSP430 Toy Car !\n\r"); // output this line to the serial console (PuTTY or similar) (car ID)
 	mx=SPI_Read(0x00); // get the 'ready' status of the car
@@ -95,8 +95,11 @@ void main()
 			mx=SPI_Read(0x00); // read again the 'ready' status of the car
 			puts("\n\rMouse PID ");
 			putx(mx,0); // display the 'ready' status of the car
+			P2OUT^=BIT5|BIT4;
 		}
 	}
+	P2OUT|=BIT5;				// light on one of the LED on top of the car
+	P2OUT&=~BIT4;
 
 	// Put the mouse sensor in low resolution
 	SPI_Write(0x0d,0x24);
@@ -224,6 +227,16 @@ void main()
 					stop(); // stop the car
 					getline(buf); // get the target speed entry
 					speedTarget = atoi(buf); // convert it from string to a number
+					if( (speedTarget > 150) || (speedTarget < 0))
+					{
+						puts("Filthy user, you tried to overflow me! \n\r");
+						startbeep(500);
+						speedTarget = 15;
+					}
+					else
+					{
+						stopbeep();
+					}
 					puts("New speed :  \n\r"); // display the new target speed
 					putsd((int16_t)(speedTarget));
 					break;
@@ -249,12 +262,32 @@ void main()
 					stop(); // stop the car
 					getline(buf); // get the target distance entry
 					distanceTarget = atoi(buf); // convert it from string to a number
+					if( (distanceTarget > 600) || (distanceTarget < 0))
+					{
+						puts("Filthy user, you tried to overflow me! \n\r");
+						startbeep(700);
+						distanceTarget = 600;
+					}
+					else
+					{
+						stopbeep();
+					}
 					puts("Distance :  \n\r"); // display the new target distance
 					putsd((int16_t)(distanceTarget));
 
-					puts("Enter the angle to turn (degrees) \n\r");
+					puts("Enter the angle to turn (degrees, -180 to +180) \n\r");
 					getline(buf); // get the target angle entry
 					angleTarget = atoi(buf); // convert it from string to a number
+					if( (angleTarget < -180) || (angleTarget > 180))
+					{
+						puts("Filthy user, you tried to overflow me! \n\r");
+						startbeep(800);
+						angleTarget = 0;
+					}
+					else
+					{
+						stopbeep();
+					}
 					puts("Angle :  \n\r"); // display the new target angle
 					putsd((int16_t)(angleTarget));
 
@@ -360,6 +393,11 @@ void main()
 					ISR_startSong( (int*)mario);
 					singing = 0;
 				}
+				else if( singing == 1)
+				{
+					ISR_startSong( (int*)tetris);
+					singing = 0;
+				}
 				straight();
 				stop();
 				step += 1;
@@ -383,7 +421,7 @@ void main()
 		}
 
 		/* this is to stop the simulation with the car if 30sec has passed */
-		if( (time - firstTime) > 30000000)
+		if( (time - firstTime) > 35000000)
 		{
 			step = 2;
 		}
