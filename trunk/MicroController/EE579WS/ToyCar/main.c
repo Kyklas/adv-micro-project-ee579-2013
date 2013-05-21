@@ -39,6 +39,7 @@
 unsigned long time=0; // the current time
 unsigned long ltime=0; // time variable used to remember the last time the calculations were made
 unsigned long dtime=0; // time variable which hold the difference between the last time and the current time
+unsigned long firstTime = 0; // time variable holding the time of beginning of the simulation with the car to be able to stop at 30s
 // these time variables are used at the beginning to wait for the car to be ready and during the execution to
 // avoid calculation the new car position too often
 float x = 0; // the x position (in cm) of the car within the global coordinates system
@@ -153,16 +154,18 @@ void main()
 #ifdef DEBUG
 					ISR_startSong( (int*)portal);
 #endif
-
+					puts("Music on\n\r");
 					singing = 1;
 					break;
 				case '+' :  // increase the speed (for the test)
+					puts("Speed \n\r");
 					speedTarget+=10;
 					putsd(speedTarget);
 					speed( speedTarget);
 					puts("\n\r");
 					break;
 				case '-' :  // Diminish the speed (for the test)
+					puts("Speed \n\r");
 					speedTarget-=10;
 					putsd(speedTarget);
 					speed( speedTarget);
@@ -217,17 +220,16 @@ void main()
 #endif
 
 				case 'c' : // Modify the target speed, stop the car
-					puts("\nEnter a speed value for the car.");
+					puts("Enter a speed value for the car.\n\r");
 					stop(); // stop the car
 					getline(buf); // get the target speed entry
 					speedTarget = atoi(buf); // convert it from string to a number
-					puts("\n\rNew speed :  "); // display the new target speed
+					puts("New speed :  \n\r"); // display the new target speed
 					putsd((int16_t)(speedTarget));
 					break;
 
 				case 'r' : // reset the X, Y and angle values
-					puts("Reset");
-					puts("\n\r");
+					puts("Reset \n\r");
 #ifdef DEBUG
 					// display the calculated x, y and angle before reseting them
 					putsd((int16_t)(x*100));
@@ -243,17 +245,17 @@ void main()
 					break;
 
 				case 'p' : // get distance and angle, launch the correction
-					puts("\nEnter the distance before turning (cm) ");
+					puts("Enter the distance before turning (cm) \n\r");
 					stop(); // stop the car
 					getline(buf); // get the target distance entry
 					distanceTarget = atoi(buf); // convert it from string to a number
-					puts("\n\rDistance :  "); // display the new target distance
+					puts("Distance :  \n\r"); // display the new target distance
 					putsd((int16_t)(distanceTarget));
 
-					puts("\nEnter the angle to turn (degrees) ");
+					puts("Enter the angle to turn (degrees) \n\r");
 					getline(buf); // get the target angle entry
 					angleTarget = atoi(buf); // convert it from string to a number
-					puts("\n\rAngle :  "); // display the new target angle
+					puts("Angle :  \n\r"); // display the new target angle
 					putsd((int16_t)(angleTarget));
 
 					// calculate the final coordinates
@@ -269,6 +271,7 @@ void main()
 					getc();
 #endif
 					step = 0; // to allow moving
+					firstTime = time; // to start counting for the 30s
 					// sing if singing mode !
 					if( singing == 1)
 					{
@@ -377,6 +380,12 @@ void main()
 		{
 			P2OUT&=~BIT4;
 			P2OUT|=BIT5;
+		}
+
+		/* this is to stop the simulation with the car if 30sec has passed */
+		if( (time - firstTime) > 30000000)
+		{
+			step = 2;
 		}
 	}
 }
