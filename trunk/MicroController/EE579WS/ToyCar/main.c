@@ -392,11 +392,13 @@ void main()
 				{
 					ISR_startSong( (int*)mario);
 					singing = 0;
+					firstTime = 0;
 				}
 				else if( singing == 1)
 				{
 					ISR_startSong( (int*)tetris);
 					singing = 0;
+					firstTime = 0;
 				}
 				straight();
 				stop();
@@ -421,7 +423,7 @@ void main()
 		}
 
 		/* this is to stop the simulation with the car if 30sec has passed */
-		if( (time - firstTime) > 35000000)
+		if( ((time - firstTime) > 35000000) && (firstTime != 0) )
 		{
 			step = 2;
 		}
